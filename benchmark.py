@@ -10,6 +10,7 @@ Benchmarking utility for ijson
 '''
 import argparse
 import collections
+import contextlib
 import io
 import os
 import sys
@@ -138,6 +139,14 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
         bname = fname
         size = os.stat(args.input).st_size
 
+    # Prepare reader
+    def get_reader():
+        if not benchmark_func:
+            return open(fname, 'rb')
+        elif args.run_async:
+            return AsyncReader(data)
+        return io.BytesIO(data)
+
     for backend_name, backend in args.backends.items():
 
         # Get correct method and prepare its arguments
@@ -157,50 +166,38 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
         if not args.run_coro:
             method_kwargs['buf_size'] = args.bufsize
 
-        # Prepare reader
-        reader = None
-        if not benchmark_func:
-            reader = open(fname, 'rb')
-        else:
-            reader = AsyncReader(data) if args.run_async else io.BytesIO(data)
-
         # Prepare function that will run the benchmark
         if args.run_async:
             import asyncio
             loop = asyncio.new_event_loop()
-            def run():
+            def run(reader):
                 try:
                     loop.run_until_complete(_run_async(method, reader, *method_args, **method_kwargs))
                 finally:
                     loop.close()
         elif args.run_coro:
-            def run():
+            def run(reader):
                 from ijson.utils import sendable_list
                 events = sendable_list()
                 coro = method(events, *method_args, **method_kwargs)
-                if reader:
-                    chunks = iter(lambda: reader.read(args.bufsize), b'')
-                else:
-                    chunks = (data[pos:pos + args.bufsize]
-                              for pos in range(0, len(data), args.bufsize))
-                for chunk in chunks:
+                for chunk in iter(lambda: reader.read(args.bufsize), b''):
                     coro.send(chunk)
                     del events[:]
                 coro.close()
         else:
-            def run():
+            def run(reader):
                 for _ in method(reader, *method_args, **method_kwargs):
                     pass
 
         # Go, go, go!
         start = time.time()
-        run()
+        with contextlib.closing(get_reader()) as reader:
+            run(reader)
         duration = time.time() - start
         megabytes = size / 1024. / 1024.
         print("%.3f, %s, %s, %s, %.3f, %.3f" %
               (megabytes, args.method, bname, backend_name, duration,
                megabytes / duration))
-        reader.close()
 
 
 def main():
