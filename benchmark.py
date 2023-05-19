@@ -190,18 +190,20 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
                     pass
 
         # Go, go, go!
-        start = time.time()
-        with contextlib.closing(get_reader()) as reader:
-            run(reader)
-        duration = time.time() - start
-        megabytes = size / 1024. / 1024.
-        print("%.3f, %s, %s, %s, %.3f, %.3f" %
-              (megabytes, args.method, bname, backend_name, duration,
-               megabytes / duration))
+        for iteration in range(args.iterations):
+            start = time.time()
+            with contextlib.closing(get_reader()) as reader:
+                run(reader)
+            duration = time.time() - start
+            megabytes = size / 1024. / 1024.
+            print("%.3f, %s, %s, %s, %.3f, %.3f" %
+                  (megabytes, args.method, bname, backend_name, duration,
+                   megabytes / duration))
 
 
 def main():
     DEFAULT_N = 100000
+    DEFAULT_ITERATIONS = 1
     DEFAULT_BUFSIZE = 64 * 1024
     ALL_BENCHMARKS = ','.join(_benchmarks)
     ALL_BACKENDS = ','.join(_backends)
@@ -209,6 +211,9 @@ def main():
     parser.add_argument('-s', '--size', type=int,
         help='Size of JSON content; actual size in bytes might differ, defaults to %d' % DEFAULT_N,
         default=DEFAULT_N)
+    parser.add_argument('-I', '--iterations', type=int,
+        help='How many times each method should be tested, defaults to %d' % DEFAULT_ITERATIONS,
+        default=DEFAULT_ITERATIONS)
     parser.add_argument('-S', '--bufsize', type=int,
         help='Buffer size used during parsing; defaults to %d' % DEFAULT_BUFSIZE,
         default=DEFAULT_BUFSIZE)
