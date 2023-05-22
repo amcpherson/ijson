@@ -127,6 +127,17 @@ async def _run_async(method, reader, *method_args, **method_kwargs):
     async for _ in method(reader, *method_args, **method_kwargs):
         pass
 
+def median(values):
+    sorted_values = sorted(values)
+    n = len(sorted_values)
+    if n % 2 == 0:
+        return (sorted_values[n // 2 - 1] + sorted_values[n // 2]) / 2.
+    return sorted_values[n // 2]
+
+def stats(values):
+    total = sum(values)
+    return min(values), total / float(len(values)), median(values), max(values)
+
 def run_benchmarks(args, benchmark_func=None, fname=None):
     if bool(benchmark_func) == bool(fname):
         raise ValueError("Either benchmark_func or fname must be given")
@@ -190,15 +201,19 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
                     pass
 
         # Go, go, go!
+        durations = []
         for iteration in range(args.iterations):
-            start = time.time()
             with contextlib.closing(get_reader()) as reader:
+                start = time.time()
                 run(reader)
-            duration = time.time() - start
-            megabytes = size / 1024. / 1024.
-            print("%.3f, %s, %s, %s, %.3f, %.3f" %
-                  (megabytes, args.method, bname, backend_name, duration,
-                   megabytes / duration))
+                durations.append(time.time() - start)
+        megabytes = size / 1024. / 1024.
+        results = (
+            (megabytes, args.method, bname, backend_name) +
+            stats(durations) +
+            stats([megabytes / duration for duration in durations])
+        )
+        print("%.3f, %s, %s, %s, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f" % results)
 
 
 def main():
@@ -248,7 +263,7 @@ def main():
         print(msg)
         return
 
-    print("#mbytes,method,test_case,backend,time,mb_per_sec")
+    print("#mbytes, method, test_case, backend, time_min, time_avg, time_median, time_max, mb_per_sec_min, mb_per_sec_avg, mb_per_sec_median, mb_per_sec_max")
     if args.input:
         run_benchmarks(args, fname=args.input)
     else:
