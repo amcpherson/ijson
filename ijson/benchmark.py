@@ -139,8 +139,7 @@ def stats(values):
     return min(values), total / float(len(values)), median(values), max(values)
 
 def run_benchmarks(args, benchmark_func=None, fname=None):
-    if bool(benchmark_func) == bool(fname):
-        raise ValueError("Either benchmark_func or fname must be given")
+    assert bool(benchmark_func) != bool(fname)
     if benchmark_func:
         bname = benchmark_func.__name__
         with progress_message('Generating data for benchmark %s...' % (bname,)):
