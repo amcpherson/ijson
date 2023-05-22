@@ -147,7 +147,7 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
             size = len(data)
     else:
         bname = fname
-        size = os.stat(args.input).st_size
+        size = os.stat(fname).st_size
 
     # Prepare reader
     def get_reader():
@@ -239,7 +239,7 @@ def main():
         default=ALL_BACKENDS)
     parser.add_argument('-l', '--list', action='store_true',
         help='List available benchmarks and backends')
-    parser.add_argument('input',
+    parser.add_argument('inputs', nargs='*',
         help='File to use for benchmarks rather than built-in benchmarking functions')
     parser.add_argument('-M', '--multiple-values', action='store_true', default=False,
         help='Content has multiple JSON values, useful when used with -i')
@@ -263,8 +263,9 @@ def main():
         return
 
     print("#mbytes, method, test_case, backend, time_min, time_avg, time_median, time_max, mb_per_sec_min, mb_per_sec_avg, mb_per_sec_median, mb_per_sec_max")
-    if args.input:
-        run_benchmarks(args, fname=args.input)
+    if args.inputs:
+        for filename in args.inputs:
+            run_benchmarks(args, fname=filename)
     else:
         for benchmark in args.benchmarks:
             run_benchmarks(args, benchmark)
