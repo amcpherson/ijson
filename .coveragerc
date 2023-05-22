@@ -30,3 +30,4 @@ source = ijson
 [report]
 exclude_lines =
     raise ImportError\('no backends available'\)
+	 if stdout.isatty():
