@@ -239,7 +239,7 @@ def main():
         default=ALL_BACKENDS)
     parser.add_argument('-l', '--list', action='store_true',
         help='List available benchmarks and backends')
-    parser.add_argument('-i', '--input',
+    parser.add_argument('input',
         help='File to use for benchmarks rather than built-in benchmarking functions')
     parser.add_argument('-M', '--multiple-values', action='store_true', default=False,
         help='Content has multiple JSON values, useful when used with -i')
