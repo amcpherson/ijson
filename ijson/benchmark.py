@@ -241,11 +241,11 @@ def main():
         help='List available benchmarks and backends')
     parser.add_argument('-i', '--input',
         help='File to use for benchmarks rather than built-in benchmarking functions')
-    parser.add_argument('-m', '--multiple-values', action='store_true', default=False,
+    parser.add_argument('-M', '--multiple-values', action='store_true', default=False,
         help='Content has multiple JSON values, useful when used with -i')
     parser.add_argument('-f', '--use-float', action='store_true', default=False,
         help='Parse non-integer numbers as float instead of Decimal')
-    parser.add_argument('-M', '--method', choices=['basic_parse', 'parse', 'kvitems', 'items'],
+    parser.add_argument('-m', '--method', choices=['basic_parse', 'parse', 'kvitems', 'items'],
                         help='The method to benchmark', default='basic_parse')
     parser.add_argument('-c', '--coro', action='store_true', default=False,
                         dest='run_coro', help='Benchmark coroutine methods')
