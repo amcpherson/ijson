@@ -4,6 +4,12 @@
 
 * Removed support for Python 2.7 and 3.4,
   3.5+ is still supported.
+* Distribute the existing `benchmark.py` script
+  as ``ijson.benchmark``.
+  The module is an improved version of the script,
+  supporting #iterations for a given function invocation,
+  multiple input files,
+  and more.
 
 ## [3.2.3]
 

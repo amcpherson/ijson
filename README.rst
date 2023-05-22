@@ -175,6 +175,28 @@ For example::
 Using ``-h/--help`` will show all available options.
 
 
+.. _benchmarking:
+
+Benchmarking
+------------
+
+A command line utility is included with ijson
+to help benchmarking the different methods offered by the package.
+It offers some built-in example inputs
+that try to mimic different scenarios,
+but more importantly it also supports user-provided inputs.
+You can also specify which backends to time,
+number of iterations,
+and more.
+
+The tool is available by running the ``ijson.benchmark`` module.
+For example::
+
+ $> python -m ijson.benchmark my/json/file.json -m items -p values.item
+
+Using ``-h/--help`` will show all available options.
+
+
 ``bytes``/``str`` support
 -------------------------
 
@@ -492,6 +514,10 @@ out of ijson:
   a value different from the default
   might show better performance.
   See options_ for details.
+
+The benchmarking_ tool should help
+with trying some of these options
+and observing their effect on your input files.
 
 
 .. _faq:
