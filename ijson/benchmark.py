@@ -201,11 +201,12 @@ def run_benchmarks(args, benchmark_func=None, fname=None):
 
         # Go, go, go!
         durations = []
+        now = time.perf_counter
         for iteration in range(args.iterations):
             with contextlib.closing(get_reader()) as reader:
-                start = time.time()
+                start = now()
                 run(reader)
-                durations.append(time.time() - start)
+                durations.append(now() - start)
         megabytes = size / 1024. / 1024.
         results = (
             (megabytes, args.method, bname, backend_name) +
