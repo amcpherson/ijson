@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: '3.12'
 
       - uses: docker/setup-qemu-action@v1
         if: ${{ matrix.arch == 'aarch64' }}
@@ -59,7 +59,10 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: '3.12'
+
+      - name: Install setuptools
+        run: pip install setuptools
 
       - name: Build sdist
         run: python setup.py sdist
