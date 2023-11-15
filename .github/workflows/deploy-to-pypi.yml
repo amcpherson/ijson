@@ -4,16 +4,54 @@ name: Build distributions and upload to PyPI
 on: [push, pull_request]
 
 jobs:
+
+  calculate_wheels_to_build:
+    name: Calculate OS/archs to build wheels on
+    runs-on: ubuntu-20.04
+    env:
+      ARCHS_LINUX_BASE: '["x86_64"]'
+      ARCHS_LINUX_ON_TAGS: '["x86_64", "i686", "aarch64"]'
+      ARCHS_MACOS_BASE: '["x86_64"]'
+      ARCHS_MACOS_ON_TAGS: '["x86_64", "arm64", "universal2"]'
+      ARCHS_WINDOWS_BASE: '["AMD64"]'
+      ARCHS_WINDOWS_ON_TAGS: '["AMD64", "x86"]'
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Calculate strategy matrix
+        shell: python
+        id: set-matrix
+        env:
+          ARCHS_LINUX: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_LINUX_ON_TAGS || env.ARCHS_LINUX_BASE }}
+          ARCHS_MACOS: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_MACOS_ON_TAGS || env.ARCHS_MACOS_BASE }}
+          ARCHS_WINDOWS: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_WINDOWS_ON_TAGS || env.ARCHS_WINDOWS_BASE }}
+        run: |
+          import json
+          import os
+
+          combinations = (
+              ("ubuntu-20.04", "ARCHS_LINUX"),
+              ("macos-12", "ARCHS_MACOS"),
+              ("windows-2019", "ARCHS_WINDOWS"),
+          )
+          includes = [
+            {"os": os_name, "arch": arch}
+            for os_name, archs_envvar in combinations
+            for arch in json.loads(os.getenv(archs_envvar))
+          ]
+          matrix = {"include": includes}
+          with open(os.getenv("GITHUB_OUTPUT"), "at") as github_output:
+            github_output.write(f'matrix={json.dumps(matrix)}')
+          print(f"Calculated matrix strategy:\n{json.dumps(matrix, indent=2)}")
+
   build_wheels:
-    name: Build wheels on ${{matrix.arch}} for ${{ matrix.os }}
+    name: Build wheels for ${{ matrix.os }} / ${{matrix.arch}}
+    needs: calculate_wheels_to_build
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        os: [ubuntu-20.04, windows-2019, macos-12]
-        arch: [auto]
-        include:
-          - os: ubuntu-20.04
-            arch: aarch64
+      matrix: ${{ fromJson(needs.calculate_wheels_to_build.outputs.matrix) }}
+    env:
+      CIBW_ARCHS: ${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@v3
@@ -26,7 +64,7 @@ jobs:
           python-version: '3.12'
 
       - uses: docker/setup-qemu-action@v1
-        if: ${{ matrix.arch == 'aarch64' }}
+        if: ${{ matrix.arch == 'aarch64' && matrix.os == 'linux' }}
         name: Set up QEMU
 
       - name: Install cibuildwheel
@@ -37,8 +75,6 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
         env:
-          CIBW_ARCHS_LINUX: ${{matrix.arch}}
-          CIBW_ARCHS_MACOS: "x86_64 arm64 universal2"
           CIBW_BEFORE_ALL: "bash -c 'cd \"{project}\"; sh .github/tools/install_yajl.sh'"
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ENVIRONMENT_MACOS: "IJSON_EMBED_YAJL=1"
