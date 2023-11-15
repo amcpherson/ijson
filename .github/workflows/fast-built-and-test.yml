@@ -1,0 +1,47 @@
+name: Build and test ijson
+
+# Build on every branch push, tag push, and pull request change:
+on: [push, pull_request]
+
+jobs:
+
+  fast_tests:
+    name: Build ijson and run unit tests (${{ matrix.os }}, ${{ matrix.python_version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-12]
+        python_version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        include:
+          - os: ubuntu-20.04
+            python_version: "pypy3.9"
+          - os: ubuntu-20.04
+            python_version: "pypy3.10"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - name: Install build test dependencies
+        run: pip install setuptools
+
+      - name: Install Yajl
+        if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run: sudo apt install libyajl-dev
+
+      - name: Build ijson
+        env:
+          IJSON_EMBED_YAJL: ${{ matrix.os != 'ubuntu-20.04' && '1' || '0' }}
+        run: python setup.py develop
+
+      - name: Install test dependencies
+        run: pip install pytest cffi
+
+      - name: Run tests
+        run: pytest -vv
