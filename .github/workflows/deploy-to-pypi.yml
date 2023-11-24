@@ -1,7 +1,12 @@
 name: Build distributions and upload to PyPI
 
 # Build on every branch push, tag push, and pull request change:
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+  # 00:00 UTC every Saturday, don't bother anyone
+  - cron: '0 0 * * 6'
 
 jobs:
 
@@ -9,22 +14,19 @@ jobs:
     name: Calculate OS/archs to build wheels on
     runs-on: ubuntu-20.04
     env:
+      BUILD_TYPE: ${{ (startsWith(github.event.ref, 'refs/tags/v') || github.event.schedule == '0 0 * * 6') && 'FULL' || 'BASE' }}
       ARCHS_LINUX_BASE: '["x86_64"]'
-      ARCHS_LINUX_ON_TAGS: '["x86_64", "i686", "aarch64"]'
+      ARCHS_LINUX_FULL: '["x86_64", "i686", "aarch64"]'
       ARCHS_MACOS_BASE: '["x86_64"]'
-      ARCHS_MACOS_ON_TAGS: '["x86_64", "arm64", "universal2"]'
+      ARCHS_MACOS_FULL: '["x86_64", "arm64", "universal2"]'
       ARCHS_WINDOWS_BASE: '["AMD64"]'
-      ARCHS_WINDOWS_ON_TAGS: '["AMD64", "x86"]'
+      ARCHS_WINDOWS_FULL: '["AMD64", "x86"]'
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Calculate strategy matrix
         shell: python
         id: set-matrix
-        env:
-          ARCHS_LINUX: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_LINUX_ON_TAGS || env.ARCHS_LINUX_BASE }}
-          ARCHS_MACOS: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_MACOS_ON_TAGS || env.ARCHS_MACOS_BASE }}
-          ARCHS_WINDOWS: ${{ startsWith(github.event.ref, 'refs/tags/v') && env.ARCHS_WINDOWS_ON_TAGS || env.ARCHS_WINDOWS_BASE }}
         run: |
           import json
           import os
@@ -34,10 +36,11 @@ jobs:
               ("macos-12", "ARCHS_MACOS"),
               ("windows-2019", "ARCHS_WINDOWS"),
           )
+          build_type = os.getenv("BUILD_TYPE")
           includes = [
             {"os": os_name, "arch": arch}
             for os_name, archs_envvar in combinations
-            for arch in json.loads(os.getenv(archs_envvar))
+            for arch in json.loads(os.getenv(f'{archs_envvar}_{build_type}'))
           ]
           matrix = {"include": includes}
           with open(os.getenv("GITHUB_OUTPUT"), "at") as github_output:
