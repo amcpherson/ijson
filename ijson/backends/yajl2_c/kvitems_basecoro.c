@@ -112,17 +112,13 @@ static PyMethodDef kvitems_basecoro_methods[] = {
  * kvitems generator object type
  */
 PyTypeObject KVItemsBasecoro_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(KVItemsBasecoro),
 	.tp_name = "_yajl2.kvitems_basecoro",
 	.tp_doc = "Coroutine dispatching (key, value) tuples",
 	.tp_init = (initproc)kvitems_basecoro_init,
 	.tp_dealloc = (destructor)kvitems_basecoro_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = ijson_return_none,
 	.tp_methods = kvitems_basecoro_methods

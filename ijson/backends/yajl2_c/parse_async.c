@@ -15,7 +15,6 @@
 #include "common.h"
 #include "coro_utils.h"
 
-#if PY_VERSION_HEX >= 0x03050000
 /**
  * parse_async asynchronous iterable object structure
  */
@@ -58,11 +57,7 @@ static PyAsyncMethods parseasync_methods = {
 };
 
 PyTypeObject ParseAsync_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ParseAsync),
 	.tp_name = "_yajl2._parse_async",
 	.tp_doc = "Asynchronous iterable yielding (path,evt,value) tuples",
@@ -71,5 +66,3 @@ PyTypeObject ParseAsync_Type = {
 	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_as_async = &parseasync_methods
 };
-
-#endif // PY_VERSION_HEX >= 0x03050000

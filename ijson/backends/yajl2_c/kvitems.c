@@ -49,17 +49,13 @@ static PyObject* kvitemsgen_iternext(PyObject *self)
  * kvitems generator object type
  */
 PyTypeObject KVItemsGen_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(KVItemsGen),
 	.tp_name = "_yajl2.kvitems",
 	.tp_doc = "Generates key/value pairs",
 	.tp_init = (initproc)kvitemsgen_init,
 	.tp_dealloc = (destructor)kvitemsgen_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = kvitemsgen_iternext
 };

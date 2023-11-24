@@ -14,11 +14,9 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#if PY_VERSION_HEX >= 0x03050000
 /**
  * kvitems_async asynchronous iterable object type
  */
 extern PyTypeObject KVItemsAsync_Type;
-#endif // PY_VERSION_HEX >= 0x03050000
 
 #endif // KVITEMS_ASYNC_H

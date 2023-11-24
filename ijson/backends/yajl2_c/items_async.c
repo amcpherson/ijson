@@ -16,7 +16,6 @@
 #include "common.h"
 #include "coro_utils.h"
 
-#if PY_VERSION_HEX >= 0x03050000
 /**
  * items_async asynchronous iterable object structure
  */
@@ -64,11 +63,7 @@ static PyAsyncMethods itemsasync_methods = {
 };
 
 PyTypeObject ItemsAsync_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ItemsAsync),
 	.tp_name = "_yajl2._items_async",
 	.tp_doc = "Asynchronous iterable yielding fully-built items",
@@ -77,5 +72,3 @@ PyTypeObject ItemsAsync_Type = {
 	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_as_async = &itemsasync_methods
 };
-
-#endif // PY_VERSION_HEX >= 0x03050000

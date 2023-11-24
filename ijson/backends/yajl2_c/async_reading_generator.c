@@ -15,7 +15,6 @@
 #include "basic_parse_basecoro.h"
 #include "common.h"
 
-#if PY_VERSION_HEX >= 0x03050000
 static int async_reading_generator_init(async_reading_generator *self, PyObject *args, PyObject *kwargs)
 {
 	self->coro = NULL;
@@ -204,19 +203,14 @@ static PyAsyncMethods async_reading_generator_methods = {
 };
 
 PyTypeObject AsyncReadingGeneratorType = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(async_reading_generator),
 	.tp_name = "_yajl2.async_reading_generator",
 	.tp_doc = "The awaitable yielded by the asynchronous iterables",
 	.tp_init = (initproc)async_reading_generator_init,
 	.tp_dealloc = (destructor)async_reading_generator_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_as_async = &async_reading_generator_methods,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = async_reading_generator_next,
 };
-#endif // PY_VERSION_HEX >= 0x03050000

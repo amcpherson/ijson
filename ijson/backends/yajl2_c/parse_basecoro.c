@@ -13,12 +13,6 @@
 #include "kvitems_basecoro.h"
 #include "parse_basecoro.h"
 
-#if PY_MAJOR_VERSION >= 3
-#define ijson_unicode_length PyUnicode_GET_LENGTH
-#else
-#define ijson_unicode_length PyUnicode_GET_SIZE
-#endif
-
 /*
  * __init__, destructor, __iter__ and __next__
  */
@@ -95,7 +89,7 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 		PyObject *last_path;
 		N_N(last_path = PySequence_GetItem(gen->path, npaths - 1));
 
-		if (ijson_unicode_length(last_path) > 0) {
+		if (PyUnicode_GET_LENGTH(last_path) > 0) {
 			PyObject *new_path;
 			CONCAT(new_path, last_path, dotitem);
 			N_M1(PyList_Append(gen->path, new_path));
@@ -140,17 +134,13 @@ static PyMethodDef parse_basecoro_methods[] = {
 
 
 PyTypeObject ParseBasecoro_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ParseBasecoro),
 	.tp_name = "_yajl2.parse_basecoro",
 	.tp_doc = "Coroutine dispatching (path,evt,value) tuples",
 	.tp_init = (initproc)parse_basecoro_init,
 	.tp_dealloc = (destructor)parse_basecoro_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = ijson_return_none,
 	.tp_methods = parse_basecoro_methods

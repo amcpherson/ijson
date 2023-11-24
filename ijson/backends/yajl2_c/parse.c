@@ -39,17 +39,13 @@ static PyObject* parsegen_iternext(PyObject *self)
 }
 
 PyTypeObject ParseGen_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ParseGen),
 	.tp_name = "_yajl2.parse",
 	.tp_doc = "Generates (path,evt,value)",
 	.tp_init = (initproc)parsegen_init,
 	.tp_dealloc = (destructor)parsegen_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = parsegen_iternext
 };

@@ -14,11 +14,9 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#if PY_VERSION_HEX >= 0x03050000
 /**
  * basic_parse_async asynchronous iterable object type
  */
 extern PyTypeObject BasicParseAsync_Type;
-#endif // PY_VERSION_HEX >= 0x03050000
 
 #endif // BASIC_PARSE_H

@@ -15,9 +15,6 @@
 #include <Python.h>
 
 #define STRING_FROM_UTF8(val, len) PyUnicode_FromStringAndSize((const char *)val, len)
-#if PY_MAJOR_VERSION >= 3
-#define Py_TPFLAGS_HAVE_ITER 0
-#endif
 
 /*
  * Error-handling macros to help reducing clutter in the code.

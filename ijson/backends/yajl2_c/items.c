@@ -49,17 +49,13 @@ static PyObject* itemsgen_iternext(PyObject *self)
  * items generator object type
  */
 PyTypeObject ItemsGen_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ItemsGen),
 	.tp_name = "_yajl2.items",
 	.tp_doc = "Generates items",
 	.tp_init = (initproc)itemsgen_init,
 	.tp_dealloc = (destructor)itemsgen_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = itemsgen_iternext
 };

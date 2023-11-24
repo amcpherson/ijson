@@ -14,7 +14,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#if PY_VERSION_HEX >= 0x03050000
 #include "coro_utils.h"
 
 /**
@@ -36,6 +35,5 @@ typedef struct {
 void async_reading_generator_add_coro(async_reading_generator *self, pipeline_node *coro_pipeline);
 
 extern PyTypeObject AsyncReadingGeneratorType;
-#endif // PY_VERSION_HEX >= 0x03050000
 
 #endif // ASYNC_READING_GENERATOR_H

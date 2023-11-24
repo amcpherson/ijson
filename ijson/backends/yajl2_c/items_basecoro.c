@@ -89,17 +89,13 @@ static PyMethodDef items_basecoro_methods[] = {
  * items generator object type
  */
 PyTypeObject ItemsBasecoro_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(ItemsBasecoro),
 	.tp_name = "_yajl2.items_basecoro",
 	.tp_doc = "Coroutine dispatching fully-built objects for the given prefix",
 	.tp_init = (initproc)items_basecoro_init,
 	.tp_dealloc = (destructor)items_basecoro_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = ijson_return_none,
 	.tp_methods = items_basecoro_methods

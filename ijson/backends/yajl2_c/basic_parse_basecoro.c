@@ -50,15 +50,7 @@ static int boolean(void * ctx, int val) {
 static int yajl_integer(void *ctx, long long val)
 {
 	PyObject *ival;
-#if PY_MAJOR_VERSION < 3
-	if (val <= 0xFFFFFFFF) {
-		Z_N(ival = PyInt_FromLong((long)val));
-	}
-	else
-#endif
-	{
-		Z_N(ival = PyLong_FromLongLong(val))
-	}
+	Z_N(ival = PyLong_FromLongLong(val))
 	return add_event_and_value(ctx, enames.number_ename, ival);
 }
 
@@ -90,12 +82,7 @@ static int number(void * ctx, const char *numberVal, size_t numberLen) {
 		memcpy(nval, numberVal, numberLen);
 		nval[numberLen] = 0;
 		char *endptr;
-#if PY_MAJOR_VERSION >= 3
 		val = PyLong_FromString(nval, &endptr, 10);
-#else
-		// returns either PyLong or PyInt
-		val = PyInt_FromString(nval, &endptr, 10);
-#endif
 		free(nval);
 		assert(("string provided by yajl is not an integer",
 		        val != NULL && endptr != nval));
@@ -168,11 +155,7 @@ PyObject* ijson_yajl_parse(yajl_handle handle, char *buffer, size_t length)
 			// automatically, so we show the bytes instead
 			if (!error_obj) {
 				PyErr_Clear();
-#if PY_MAJOR_VERSION >= 3
 				error_obj = PyBytes_FromString((char *)perror);
-#else
-				error_obj = PyString_FromString((char *)perror);
-#endif
 				PyErr_Clear();
 			}
 			PyErr_SetObject(IncompleteJSONError, error_obj);
@@ -273,17 +256,13 @@ static PyMethodDef basic_parse_basecoro_methods[] = {
 };
 
 PyTypeObject BasicParseBasecoro_Type = {
-#if PY_MAJOR_VERSION >= 3
 	PyVarObject_HEAD_INIT(NULL, 0)
-#else
-	PyObject_HEAD_INIT(NULL)
-#endif
 	.tp_basicsize = sizeof(BasicParseBasecoro),
 	.tp_name = "_yajl2.basic_parse_basecoro",
 	.tp_doc = "Coroutine dispatching (evt,value) pairs",
 	.tp_init = (initproc)basic_parse_basecoro_init,
 	.tp_dealloc = (destructor)basic_parse_basecoro_dealloc,
-	.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
+	.tp_flags = Py_TPFLAGS_DEFAULT,
 	.tp_iter = ijson_return_self,
 	.tp_iternext = ijson_return_none,
 	.tp_methods = basic_parse_basecoro_methods
