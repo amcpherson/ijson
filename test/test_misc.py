@@ -1,7 +1,8 @@
 import importlib.util
+import io
 import unittest
 
-from ijson import common, compat
+from ijson import common
 
 from .test_base import warning_catcher
 from test.test_base import JSON, JSON_EVENTS, JSON_PARSE_EVENTS, JSON_OBJECT,\
@@ -18,8 +19,6 @@ class Misc(unittest.TestCase):
         self.assertEqual(DeprecationWarning, warns[0].category)
 
     def test_yajl2_c_loadable(self):
-        if compat.IS_PY2:
-            self.skipTest("Test requires Python 3.4+")
         spec = importlib.util.find_spec("ijson.backends._yajl2")
         if spec is None:
             self.skipTest("yajl2_c is not built")
@@ -39,39 +38,26 @@ class MainEntryPoints(object):
 
     def _assert_str(self, expected_results, routine, *args, **kwargs):
         with warning_catcher() as warns:
-            results = list(routine(compat.b2s(JSON), *args, **kwargs))
-        self.assertEqual(expected_results, results)
-        if self.warn_on_string_stream:
-            self.assertEqual(1, len(warns))
-
-    def _assert_unicode(self, expected_results, routine, *args, **kwargs):
-        if not compat.IS_PY2:
-            return
-        with warning_catcher() as warns:
-            results = list(routine(unicode(JSON, 'utf-8'), *args, **kwargs))
+            results = list(routine(JSON.decode("utf-8"), *args, **kwargs))
         self.assertEqual(expected_results, results)
         self.assertEqual(1, len(warns))
 
     def _assert_file(self, expected_results, routine, *args, **kwargs):
-        results = list(routine(compat.BytesIO(JSON), *args, **kwargs))
+        results = list(routine(io.BytesIO(JSON), *args, **kwargs))
         self.assertEqual(expected_results, results)
 
     def _assert_async_file(self, expected_results, routine, *args, **kwargs):
-        if not compat.IS_PY35:
-            return
         from ._test_async import get_all
         results = get_all(routine, JSON, *args, **kwargs)
         self.assertEqual(expected_results, results)
 
     def _assert_async_types_coroutine(self, expected_results, routine, *args, **kwargs):
-        if not compat.IS_PY35:
-            return
         from ._test_async_types_coroutine import get_all
         results = get_all(routine, JSON, *args, **kwargs)
         self.assertEqual(expected_results, results)
 
     def _assert_events(self, expected_results, previous_routine, routine, *args, **kwargs):
-        events = previous_routine(compat.BytesIO(JSON))
+        events = previous_routine(io.BytesIO(JSON))
         # Using a different generator to make the point that we can chain
         # user-provided code
         def event_yielder():
@@ -85,7 +71,6 @@ class MainEntryPoints(object):
         self._assert_invalid_type(routine, *args, **kwargs)
         self._assert_bytes(expected_results, routine, *args, **kwargs)
         self._assert_str(expected_results, routine, *args, **kwargs)
-        self._assert_unicode(expected_results, routine, *args, **kwargs)
         self._assert_file(expected_results, routine, *args, **kwargs)
         self._assert_async_file(expected_results, routine, *args, **kwargs)
         self._assert_async_types_coroutine(expected_results, routine, *args, **kwargs)

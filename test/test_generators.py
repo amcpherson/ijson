@@ -1,7 +1,9 @@
-from ijson import common, compat
+import io
+
+from ijson import common
 
 from .test_base import (JSON, FileBasedTests, JSON_EVENTS,
-    PARTIAL_ARRAY_JSONS, warning_catcher, INVALID_JSONS, IS_PY2,
+    PARTIAL_ARRAY_JSONS, warning_catcher, INVALID_JSONS,
     generate_test_cases)
 
 
@@ -14,11 +16,11 @@ class SingleReadFile(object):
 
     def read(self, size=-1):
         if size == 0:
-            return compat.bytetype()
+            return bytes()
         val = self.raw_value
         if not val:
             raise AssertionError('read twice')
-        self.raw_value = compat.bytetype()
+        self.raw_value = bytes()
         return val
 
 
@@ -37,7 +39,7 @@ class GeneratorSpecificTests(FileBasedTests):
 
     def test_lazy(self):
         # shouldn't fail since iterator is not exhausted
-        self.backend.basic_parse(compat.BytesIO(INVALID_JSONS[0]))
+        self.backend.basic_parse(io.BytesIO(INVALID_JSONS[0]))
         self.assertTrue(True)
 
     def test_boundary_lexeme(self):
@@ -51,13 +53,9 @@ class GeneratorSpecificTests(FileBasedTests):
         self.assertEqual(events, JSON_EVENTS)
 
     def test_item_building_greediness(self):
-        self._test_item_iteration_validity(compat.BytesIO)
+        self._test_item_iteration_validity(io.BytesIO)
 
     def test_lazy_file_reading(self):
-        if self.backend_name == 'python' and IS_PY2:
-            # We know it doesn't work because because the decoder itself
-            # is quite eager on its reading
-            return
         self._test_item_iteration_validity(SingleReadFile)
 
     def _test_item_iteration_validity(self, file_type):
@@ -111,7 +109,7 @@ class GeneratorSpecificTests(FileBasedTests):
     def _test_common_routine(self, routine, *args, **kwargs):
         base_routine_name = kwargs.pop('base_routine_name', 'parse')
         base_routine = getattr(self.backend, base_routine_name)
-        events = base_routine(compat.BytesIO(self.COMMON_DATA))
+        events = base_routine(io.BytesIO(self.COMMON_DATA))
         if base_routine_name == 'parse':
             self._skip_parse_events(events)
         # Rest of events can still be used
@@ -138,9 +136,9 @@ class GeneratorSpecificTests(FileBasedTests):
 
 
 def _reader(json):
-    if type(json) == compat.bytetype:
-        return compat.BytesIO(json)
-    return compat.StringIO(json)
+    if type(json) == bytes:
+        return io.BytesIO(json)
+    return io.StringIO(json)
 
 
 def get_all(routine, json_content, *args, **kwargs):

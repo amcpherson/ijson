@@ -3,7 +3,6 @@ import subprocess
 import sys
 import unittest
 
-from ijson import compat
 from test.test_base import JSON
 
 
@@ -27,7 +26,7 @@ class DumpTests(unittest.TestCase):
             input_data += JSON
         out, err = proc.communicate(input_data)
         status = proc.wait()
-        self.assertEqual(0, status, "out:\n%s\nerr:%s" % (compat.b2s(out), compat.b2s(err)))
+        self.assertEqual(0, status, "out:\n%s\nerr:%s" % (out.decode('utf-8'), err.decode('utf-8')))
 
     def _test_dump(self, method):
         self._do_test_dump(method, True)

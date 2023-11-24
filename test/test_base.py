@@ -7,8 +7,7 @@ from decimal import Decimal
 import threading
 
 import ijson
-from ijson import common, compat
-from ijson.compat import b2s, IS_PY2
+from ijson import common
 import warnings
 
 
@@ -324,8 +323,6 @@ class warning_catcher(object):
 
     def __enter__(self):
         ret = self.catcher.__enter__()
-        if compat.IS_PY2:
-            warnings.simplefilter("always")
         return ret
 
     def __exit__(self, *args):
@@ -579,11 +576,10 @@ class FileBasedTests(object):
 
     def test_string_stream(self):
         with warning_catcher() as warns:
-            events = self.get_all(self.basic_parse, b2s(JSON))
+            events = self.get_all(self.basic_parse, JSON.decode('utf-8'))
             self.assertEqual(events, JSON_EVENTS)
-        if self.warn_on_string_stream:
-            self.assertEqual(len(warns), 1)
-            self.assertEqual(DeprecationWarning, warns[0].category)
+        self.assertEqual(len(warns), 1)
+        self.assertEqual(DeprecationWarning, warns[0].category)
 
     def test_different_buf_sizes(self):
         for buf_size in (1, 4, 16, 64, 256, 1024, 4098):
@@ -599,15 +595,12 @@ def generate_backend_specific_tests(module, classname_prefix, method_suffix,
                 ''.join(p.capitalize() for p in backend.split('_')),
                 classname_prefix
             )
-            if IS_PY2:
-                classname = classname.encode('ascii')
 
             _bases = bases + (BackendSpecificTestCase, unittest.TestCase)
             _members = {
                 'backend_name': backend,
                 'backend': ijson.get_backend(backend),
                 'method_suffix': method_suffix,
-                'warn_on_string_stream': not IS_PY2,
                 'supports_64bit_integers': not (backend == 'yajl' and ctypes.sizeof(ctypes.c_long) == 4)
             }
             members = kwargs.get('members', lambda _: {})

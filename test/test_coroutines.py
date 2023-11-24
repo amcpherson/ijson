@@ -1,15 +1,11 @@
-from ijson import utils, compat
+from ijson import utils
 
 from .test_base import generate_test_cases
 
 
-if compat.IS_PY2:
-    def bytesiter(x):
-        return x
-else:
-    def bytesiter(x):
-        for b in x:
-            yield bytes([b])
+def bytesiter(x):
+    for b in x:
+        yield bytes([b])
 
 
 def get_all(routine, json_content, *args, **kwargs):
