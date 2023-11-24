@@ -1,5 +1,10 @@
 # Changelog
 
+## Development
+
+* Removed support for Python 2.7 and 3.4,
+  3.5+ is still supported.
+
 ## [3.2.3]
 
 * Fixed several issues in the ``yajl2_c`` backend

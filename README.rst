@@ -180,7 +180,7 @@ Using ``-h/--help`` will show all available options.
 
 Although not usually how they are meant to be run,
 all the functions above also accept
-``bytes`` and ``str`` objects (and ``unicode`` in python 2.7)
+``bytes`` and ``str`` objects
 directly as inputs.
 These are then internally wrapped into a file object,
 and further processed.
@@ -191,7 +191,7 @@ but probably not extremely useful in real-life scenarios.
 ``asyncio`` support
 -------------------
 
-In python 3.5+ all of the methods above
+All of the methods above
 work also on file-like asynchronous objects,
 so they can be iterated asynchronously.
 In other words, something like this:
@@ -515,8 +515,7 @@ FAQ
 
    On the other hand ijson always returns text data
    (JSON string values, object member names, event names, etc)
-   as ``str`` objects in python 3,
-   and ``unicode`` objects in python 2.7.
+   as ``str`` objects.
    This mimics the behavior of the system ``json`` module.
 
 #. **Q**: How are numbers dealt with?
