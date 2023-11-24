@@ -17,7 +17,6 @@ import time
 
 
 import ijson
-from ijson import compat
 
 _benchmarks = collections.OrderedDict()
 def benchmark(f):
@@ -113,8 +112,6 @@ class progress_message(object):
         _stdout_tty_write_flush('\r\033[K')
 
 
-if compat.IS_PY35:
-    exec('''
 class AsyncReader(object):
     def __init__(self, data):
         self.data = io.BytesIO(data)
@@ -128,7 +125,6 @@ class AsyncReader(object):
 async def _run_async(method, reader, *method_args, **method_kwargs):
     async for _ in method(reader, *method_args, **method_kwargs):
         pass
-    ''')
 
 def run_benchmarks(args, benchmark_func=None, fname=None):
     if bool(benchmark_func) == bool(fname):
@@ -237,9 +233,8 @@ def main():
                         help='The method to benchmark', default='basic_parse')
     parser.add_argument('-c', '--coro', action='store_true', default=False,
                         dest='run_coro', help='Benchmark coroutine methods')
-    if compat.IS_PY35:
-        parser.add_argument('-a', '--async', action='store_true', default=False,
-                            dest='run_async', help='Benchmark asyncio-enabled methods')
+    parser.add_argument('-a', '--async', action='store_true', default=False,
+                        dest='run_async', help='Benchmark asyncio-enabled methods')
     parser.add_argument('-p', '--prefix', help='Prefix (used with -M items|kvitems)', default='')
 
     args = parser.parse_args()
