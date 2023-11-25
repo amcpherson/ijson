@@ -67,7 +67,7 @@ jobs:
           python-version: '3.12'
 
       - uses: docker/setup-qemu-action@v1
-        if: ${{ matrix.arch == 'aarch64' && matrix.os == 'linux' }}
+        if: ${{ matrix.arch == 'aarch64' && matrix.os == 'ubuntu-20.04' }}
         name: Set up QEMU
 
       - name: Install cibuildwheel
