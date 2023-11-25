@@ -45,7 +45,7 @@ for major platforms
 and python versions.
 These are built and published automatically
 using `cibuildwheel <https://cibuildwheel.readthedocs.io/en/stable/>`_
-via Travis CI.
+via GitHub Actions.
 
 
 Usage
