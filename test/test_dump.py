@@ -14,7 +14,7 @@ class DumpTests(unittest.TestCase):
         env['IJSON_BACKEND'] = 'python'
         # Ensure printing works on the subprocess in Windows
         # by using utf-8 on its stdout
-        if 'win' in sys.platform:
+        if sys.platform == 'win32':
             env = dict(os.environ)
             env['PYTHONIOENCODING'] = 'utf-8'
         cmd = [sys.executable, '-m', 'ijson.dump', '-m', method, '-p', '']
