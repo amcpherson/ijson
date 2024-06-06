@@ -1,6 +1,6 @@
 # Changelog
 
-## Development
+## [3.3.0]
 
 * Removed support for Python 2.7 and 3.4,
   3.5+ is still supported.
@@ -346,3 +346,4 @@
 [3.2.1]: https://github.com/ICRAR/ijson/releases/tag/v3.2.1
 [3.2.2]: https://github.com/ICRAR/ijson/releases/tag/v3.2.2
 [3.2.3]: https://github.com/ICRAR/ijson/releases/tag/v3.2.3
+[3.3.0]: https://github.com/ICRAR/ijson/releases/tag/v3.3.0
