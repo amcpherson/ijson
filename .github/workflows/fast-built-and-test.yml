@@ -10,12 +10,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-12]
+        os: [ubuntu-latest, windows-2019, macos-12]
         python_version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             python_version: "pypy3.9"
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             python_version: "pypy3.10"
 
     steps:
@@ -32,12 +32,12 @@ jobs:
         run: pip install setuptools
 
       - name: Install Yajl
-        if: ${{ matrix.os == 'ubuntu-20.04' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt install libyajl-dev
 
       - name: Build ijson
         env:
-          IJSON_EMBED_YAJL: ${{ matrix.os != 'ubuntu-20.04' && '1' || '0' }}
+          IJSON_EMBED_YAJL: ${{ matrix.os != 'ubuntu-latest' && '1' || '0' }}
         run: python setup.py develop
 
       - name: Install test dependencies
