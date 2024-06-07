@@ -5,7 +5,7 @@ import unittest
 from ijson import common
 
 from .test_base import warning_catcher
-from test.test_base import JSON, JSON_EVENTS, JSON_PARSE_EVENTS, JSON_OBJECT,\
+from tests.test_base import JSON, JSON_EVENTS, JSON_PARSE_EVENTS, JSON_OBJECT,\
     generate_backend_specific_tests, JSON_KVITEMS
 
 

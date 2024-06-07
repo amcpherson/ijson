@@ -3,7 +3,7 @@ import subprocess
 import sys
 import unittest
 
-from test.test_base import JSON
+from tests.test_base import JSON
 
 
 class DumpTests(unittest.TestCase):

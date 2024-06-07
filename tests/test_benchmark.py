@@ -4,7 +4,7 @@ import sys
 import unittest
 import tempfile
 
-from test.test_base import JSON
+from tests.test_base import JSON
 
 
 class BenchmarkTests(unittest.TestCase):
