@@ -43,5 +43,8 @@ jobs:
       - name: Install test dependencies
         run: pip install pytest cffi
 
-      - name: Run tests
+      - name: Run unittests
         run: pytest -vv
+
+      - name: Run doctests
+        run: pytest --doctest-modules --doctest-ignore-import-errors ijson
