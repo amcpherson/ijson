@@ -1,5 +1,9 @@
 # Changelog
 
+## Development
+
+* Removed tox.
+
 ## [3.3.0]
 
 * Removed support for Python 2.7 and 3.4,
