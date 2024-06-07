@@ -589,7 +589,7 @@ class FileBasedTests(object):
 
 def generate_backend_specific_tests(module, classname_prefix, method_suffix,
                                     *bases, **kwargs):
-    for backend in ['python', 'yajl', 'yajl2', 'yajl2_cffi', 'yajl2_c']:
+    for backend in ijson.ALL_BACKENDS:
         try:
             classname = '%s%sTests' % (
                 ''.join(p.capitalize() for p in backend.split('_')),

@@ -18,6 +18,13 @@ from ijson.common import JSONError, IncompleteJSONError, ObjectBuilder
 from ijson.utils import coroutine, sendable_list
 from .version import __version__
 
+
+ALL_BACKENDS = ('yajl2_c', 'yajl2_cffi', 'yajl2', 'yajl', 'python')
+"""
+All supported backends, in descending order or speed. Not all might be available at
+runtime.
+"""
+
 def get_backend(backend):
     """Import the backend named ``backend``"""
     import importlib
@@ -27,7 +34,7 @@ def _default_backend():
     import os
     if 'IJSON_BACKEND' in os.environ:
         return get_backend(os.environ['IJSON_BACKEND'])
-    for backend in ('yajl2_c', 'yajl2_cffi', 'yajl2', 'yajl', 'python'):
+    for backend in ALL_BACKENDS:
         try:
             return get_backend(backend)
         except ImportError:

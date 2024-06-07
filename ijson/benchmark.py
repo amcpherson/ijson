@@ -74,11 +74,9 @@ def parse_benchmarks(s):
     return [_benchmarks[name] for name in s.split(',')]
 
 
-BACKEND_NAMES = 'python', 'yajl', 'yajl2', 'yajl2_cffi', 'yajl2_c'
-
 def load_backends():
     backends = collections.OrderedDict()
-    for backend_name in BACKEND_NAMES:
+    for backend_name in ijson.ALL_BACKENDS:
         try:
             backends[backend_name] = ijson.get_backend(backend_name)
         except ImportError:

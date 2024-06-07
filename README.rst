@@ -466,6 +466,8 @@ backends located in ijson/backends:
 - ``yajl``: deprecated YAJL 1.x + ctypes wrapper, for even older systems.
 - ``python``: pure Python parser, good to use with PyPy
 
+This list of backend names is available under the ``ijson.ALL_BACKENDS`` constant.
+
 You can import a specific backend and use it in the same way as the top level
 library:
 

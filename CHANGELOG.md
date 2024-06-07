@@ -2,6 +2,9 @@
 
 ## Development
 
+* Added `ijson.ALL_BACKENDS` constant
+  listing all supported backends
+  (which might or not be available at runtime).
 * Removed tox.
 
 ## [3.3.0]
