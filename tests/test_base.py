@@ -315,7 +315,7 @@ EMPTY_MEMBER_TEST_CASES = {
 }
 
 
-class warning_catcher(object):
+class warning_catcher:
     '''Encapsulates proper warning catch-all logic in python 2.7 and 3'''
 
     def __init__(self):
@@ -329,7 +329,7 @@ class warning_catcher(object):
         self.catcher.__exit__(*args)
 
 
-class BackendSpecificTestCase(object):
+class BackendSpecificTestCase:
     '''
     Base class for backend-specific tests, gives ability to easily and
     generically reference different methods on the backend. It requires
@@ -341,7 +341,7 @@ class BackendSpecificTestCase(object):
         return getattr(self.backend, name + self.method_suffix)
 
 
-class IJsonTestsBase(object):
+class IJsonTestsBase:
     '''
     Base class with common tests for all iteration methods.
     Subclasses implement `all()` and `first()` to collect events coming from
@@ -572,7 +572,7 @@ class IJsonTestsBase(object):
         self._test_empty_member(EMPTY_MEMBER_TEST_CASES['top_level_embedded'])
 
 
-class FileBasedTests(object):
+class FileBasedTests:
 
     def test_string_stream(self):
         with warning_catcher() as warns:

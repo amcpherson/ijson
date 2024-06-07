@@ -25,7 +25,7 @@ class sendable_deque(collections.deque):
     '''Like utils.sendable_list, but for deque objects'''
     send = collections.deque.append
 
-class async_iterable(object):
+class async_iterable:
     '''
     A utility class that implements an async iterator returning values
     dispatched by a coroutine pipeline after *it* has received values coming

@@ -6,7 +6,7 @@ import sys
 import warnings
 
 
-class utf8reader(object):
+class utf8reader:
     """Takes a utf8-encoded string reader and reads bytes out of it"""
 
     def __init__(self, str_reader):

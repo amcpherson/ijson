@@ -6,7 +6,7 @@ import io
 from ._test_async_common import _get_all, _get_first
 
 
-class AsyncReader(object):
+class AsyncReader:
     def __init__(self, data):
         if type(data) == bytes:
             self.data = io.BytesIO(data)

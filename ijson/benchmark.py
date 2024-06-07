@@ -98,7 +98,7 @@ def _stdout_tty_write_flush(message):
         stdout.flush()
 
 
-class progress_message(object):
+class progress_message:
 
     def __init__(self, message):
         self.message = message
@@ -111,7 +111,7 @@ class progress_message(object):
         _stdout_tty_write_flush('\r\033[K')
 
 
-class AsyncReader(object):
+class AsyncReader:
     def __init__(self, data):
         self.data = io.BytesIO(data)
 

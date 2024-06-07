@@ -25,7 +25,7 @@ class Misc(unittest.TestCase):
         importlib.util.module_from_spec(spec)
 
 
-class MainEntryPoints(object):
+class MainEntryPoints:
 
     def _assert_invalid_type(self, routine, *args, **kwargs):
         # Functions are not valid inputs

@@ -195,7 +195,7 @@ def yajl_parse(handle, buffer):
         raise exception(error)
 
 
-class Container(object):
+class Container:
     pass
 
 

@@ -91,7 +91,7 @@ def parse_basecoro(target):
         target.send((prefix, event, value))
 
 
-class ObjectBuilder(object):
+class ObjectBuilder:
     '''
     Incrementally builds an object from JSON parser events. Events are passed
     into the `event` function that accepts two parameters: event type and

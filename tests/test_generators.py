@@ -8,7 +8,7 @@ from .test_base import (JSON, FileBasedTests, JSON_EVENTS,
 
 
 
-class SingleReadFile(object):
+class SingleReadFile:
     '''A bytes file that can be read only once'''
 
     def __init__(self, raw_value):
