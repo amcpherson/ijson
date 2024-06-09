@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-2019, macos-12]
-        python_version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13-dev"]
         include:
           - os: ubuntu-latest
             python_version: "pypy3.9"
@@ -41,7 +41,9 @@ jobs:
         run: python setup.py develop
 
       - name: Install test dependencies
-        run: pip install pytest cffi
+        env:
+          CFFI_DEPENDENCY: ${{ matrix.python_version == '3.13-dev' && 'cffi==1.17.0rc1' || 'cffi' }}
+        run: pip install pytest $CFFI_DEPENDENCY
 
       - name: Run unittests
         run: pytest -vv
