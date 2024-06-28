@@ -223,7 +223,7 @@ INVALID_JSONS = [
     b']',                      # no corresponding opening token
     b'"\xa8"'                  # invalid UTF-8 byte sequence
 ]
-YAJL1_PASSING_INVALID = INVALID_JSONS[6]
+INVALID_JSON_WITH_DANGLING_JUNK = INVALID_JSONS[6]
 INCOMPLETE_JSONS = [
     b'',
     b'"test',
@@ -477,10 +477,10 @@ class IJsonTestsBase:
         try:
             past32bits = 2 ** 32 + 1
             received = get_numbers(('%d' % past32bits).encode('utf8'), use_float=True)[1][0]
-            self.assertTrue(self.supports_64bit_integers)
+            self.assertTrue(self.backend.capabilities.int64)
             self.assertEqual(past32bits, received)
         except common.JSONError:
-            self.assertFalse(self.supports_64bit_integers)
+            self.assertFalse(self.backend.capabilities.int64)
         # Check that numbers bigger than MAX_DOUBLE cannot be represented
         try:
             get_numbers(b'1e400', use_float=True)
@@ -490,7 +490,7 @@ class IJsonTestsBase:
 
     def test_invalid_numbers(self):
         # leading zeros
-        if self.detects_leading_zeros:
+        if self.backend.capabilities.invalid_leading_zeros_detection:
             for case in (b'00',   b'01',   b'001'):
                 for base in (case, case + b'.0', case + b'e0', case + b'E0'):
                     for n in (base, b'-' + base):
@@ -511,7 +511,7 @@ class IJsonTestsBase:
                 self.get_all(self.basic_parse, json)
 
     def test_incomplete_tokens(self):
-        if not self.handles_incomplete_json_tokens:
+        if not self.backend.capabilities.incomplete_json_tokens_detection:
             return
         for json in INCOMPLETE_JSON_TOKENS:
             with self.assertRaises(common.IncompleteJSONError):
@@ -519,16 +519,14 @@ class IJsonTestsBase:
 
     def test_invalid(self):
         for json in INVALID_JSONS:
-            # Yajl1 doesn't complain about additional data after the end
-            # of a parsed object. Skipping this test.
-            if self.backend_name == 'yajl' and json == YAJL1_PASSING_INVALID:
+            if not self.backend.capabilities.incomplete_json_tokens_detection and json == INVALID_JSON_WITH_DANGLING_JUNK:
                 continue
             with self.assertRaises(common.JSONError):
                 self.get_all(self.basic_parse, json)
 
     def test_multiple_values(self):
         """Test that the multiple_values flag works"""
-        if not self.supports_multiple_values:
+        if not self.backend.capabilities.multiple_values:
             with self.assertRaises(ValueError):
                 self.get_all(self.basic_parse, "", multiple_values=True)
             return
@@ -550,7 +548,7 @@ class IJsonTestsBase:
         try:
             self.get_all(self.basic_parse, json, allow_comments=True)
         except ValueError:
-            if self.supports_comments:
+            if self.backend.capabilities.c_comments:
                 raise
 
     def _test_empty_member(self, test_case):
@@ -598,10 +596,8 @@ def generate_backend_specific_tests(module, classname_prefix, method_suffix,
 
             _bases = bases + (BackendSpecificTestCase, unittest.TestCase)
             _members = {
-                'backend_name': backend,
                 'backend': ijson.get_backend(backend),
                 'method_suffix': method_suffix,
-                'supports_64bit_integers': not (backend == 'yajl' and ctypes.sizeof(ctypes.c_long) == 4)
             }
             members = kwargs.get('members', lambda _: {})
             _members.update(members(backend))
@@ -615,10 +611,6 @@ def generate_test_cases(module, classname, method_suffix, *bases):
         members = lambda name: {
             'get_all': lambda self, *args, **kwargs: module['get_all'](*args, **kwargs),
             'get_first': lambda self, *args, **kwargs: module['get_first'](*args, **kwargs),
-            'supports_multiple_values': name != 'yajl',
-            'supports_comments': name != 'python',
-            'detects_leading_zeros': name != 'yajl',
-            'handles_incomplete_json_tokens': name != 'yajl'
         }
         return generate_backend_specific_tests(module, classname, method_suffix,
                                                members=members, *_bases)
