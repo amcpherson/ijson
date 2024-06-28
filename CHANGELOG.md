@@ -5,6 +5,8 @@
 * Added `ijson.ALL_BACKENDS` constant
   listing all supported backends
   (which might or not be available at runtime).
+* Added a `capabilities` constant to each backend
+  describing which capabilities it supports.
 * Removed tox.
 
 ## [3.3.0]

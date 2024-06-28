@@ -373,7 +373,7 @@ to give users more fine-grained control over certain operations:
   (e.g., if ``1e400`` is encountered).
   This option also has the side-effect
   that integer numbers bigger than ``2^64``
-  (but *sometimes* ``2^32``, see backends_)
+  (but *sometimes* ``2^32``, see capabilities_)
   will also raise an overflow error,
   due to similar reasons.
   Future versions of ijson
@@ -494,6 +494,40 @@ to get a specific backend based on a name:
         # ...
 
 
+.. _capabilities:
+
+Capabilities
+------------
+
+Apart from their performance,
+all backends are designed to support the same capabilities.
+There are however some small known differences,
+all of which can be queried by inspecting
+the ``capabilities`` module constant.
+It contains the following members:
+
+ * ``c_comments``: C-style comments are supported.
+ * ``multiple_values``: multiple top-level JSON values are supported.
+ * ``detects_invalid_leading_zeros``: numbers with leading zeroes
+   are reported as invalid (as they should, as pert the JSON standard),
+   raising a ``ValueError``.
+ * ``detects_incomplete_json_tokens``: detects incomplete JSON tokens
+   at the end of an incomplete document (e.g., ``{"a": fals``),
+   raising an ``IncompleteJSONError``.
+ * ``int64``: when using ``use_float=True``,
+     values greater than or equal to ``2^32`` are correctly returned.
+
+These capabilities are supported by all backends,
+with the following exceptions:
+
+ * The ``yajl`` backend doesn't support ``multiple_values``,
+   ``detects_invalid_leading_zeros`` and ``detects_incomplete_json_tokens``.
+   It also doesn't support ``int64``
+   in platforms with a 32-bit C ``long`` type.
+
+ * The ``python`` backend doesn't support ``c_comments``.
+
+
 Performance tips
 ================
 
@@ -591,27 +625,6 @@ FAQ
    containing multiple values, and is *usually* solved
    by passing the ``multiple_values=True`` to the ijson function in use.
    See the options_ section for details.
-
-#. **Q**: Are there any differences between the backends?
-
-   **A**: Apart from their performance,
-   all backends are designed to support the same capabilities.
-   There are however some small known differences:
-
-   * The ``yajl`` backend doesn't support ``multiple_values=True``.
-     It also doesn't complain about additional data
-     found after the end of the top-level JSON object.
-     When using ``use_float=True`` it also doesn't properly support
-     values greater than 2^32 in 32-bit platforms or Windows.
-     Numbers with leading zeros are not reported as invalid
-     (although they are invalid JSON numbers).
-     Incomplete JSON tokens at the end of an incomplete document
-     (e.g., ``{"a": fals``) are not reported as ``IncompleteJSONError``.
-
-   * The ``python`` backend doesn't support ``allow_comments=True``
-     It also internally works with ``str`` objects, not ``bytes``,
-     but this is an internal detail that users shouldn't need to worry about,
-     and might change in the future.
 
 
 Acknowledgements

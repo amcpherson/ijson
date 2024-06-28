@@ -2,6 +2,7 @@
 Wrapper for YAJL C library version 1.x.
 '''
 
+import ctypes
 from ctypes import Structure, c_uint, byref
 
 from ijson import common, utils
@@ -56,4 +57,10 @@ def basic_parse_basecoro(target, allow_comments=False, multiple_values=False,
         yajl.yajl_free(handle)
 
 
-common.enrich_backend(globals())
+common.enrich_backend(
+    globals(),
+    multiple_values=False,
+    invalid_leading_zeros_detection=False,
+    incomplete_json_tokens_detection=False,
+    int64=ctypes.sizeof(ctypes.c_long) == 0,
+)

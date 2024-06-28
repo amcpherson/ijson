@@ -462,11 +462,37 @@ def items(events, prefix, map_type=None):
     )
 
 
-def enrich_backend(backend):
+class BackendCapabilities:
+    '''
+    Capabilities supported by a backend.
+    '''
+
+    __slots__ = {
+        'c_comments': 'C-ctyle comments (non-standard in JSON)',
+        'multiple_values': 'Multiple top-level values (non-standard in JSON)',
+        'invalid_leading_zeros_detection': 'Detection of leading zeros in numbers, marking them as invalid',
+        'incomplete_json_tokens_detection': 'Documents with incomplete JSON tokens',
+        'int64': '64 bit integers supported when running with ``use_float=True``',
+    }
+
+    def __init__(self):
+        self.c_comments = True
+        self.multiple_values = True
+        self.invalid_leading_zeros_detection = True
+        self.incomplete_json_tokens_detection = True
+        self.int64 = True
+
+
+def enrich_backend(backend, **capabilities_overrides):
     '''
     Provides a backend with any missing coroutines/generators/async-iterables
     it might be missing by using the generic ones written in python.
     '''
+    # Backends unset some of these
+    capabilities = BackendCapabilities()
+    for name, value in capabilities_overrides.items():
+        setattr(capabilities, name, value)
+    backend['capabilities'] = capabilities
     backend['backend'] = backend['__name__'].split('.')[-1]
     for name in ('basic_parse', 'parse', 'items', 'kvitems'):
         basecoro_name = name + '_basecoro'

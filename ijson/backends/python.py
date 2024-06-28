@@ -285,4 +285,4 @@ def basic_parse_basecoro(target, multiple_values=False, allow_comments=False,
     return utf8_encoder(Lexer(parse_value(target, multiple_values, use_float)))
 
 
-common.enrich_backend(globals())
+common.enrich_backend(globals(), c_comments=False)
