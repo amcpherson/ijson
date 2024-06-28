@@ -506,26 +506,26 @@ all of which can be queried by inspecting
 the ``capabilities`` module constant.
 It contains the following members:
 
- * ``c_comments``: C-style comments are supported.
- * ``multiple_values``: multiple top-level JSON values are supported.
- * ``detects_invalid_leading_zeros``: numbers with leading zeroes
-   are reported as invalid (as they should, as pert the JSON standard),
-   raising a ``ValueError``.
- * ``detects_incomplete_json_tokens``: detects incomplete JSON tokens
-   at the end of an incomplete document (e.g., ``{"a": fals``),
-   raising an ``IncompleteJSONError``.
- * ``int64``: when using ``use_float=True``,
-     values greater than or equal to ``2^32`` are correctly returned.
+* ``c_comments``: C-style comments are supported.
+* ``multiple_values``: multiple top-level JSON values are supported.
+* ``detects_invalid_leading_zeros``: numbers with leading zeroes
+  are reported as invalid (as they should, as pert the JSON standard),
+  raising a ``ValueError``.
+* ``detects_incomplete_json_tokens``: detects incomplete JSON tokens
+  at the end of an incomplete document (e.g., ``{"a": fals``),
+  raising an ``IncompleteJSONError``.
+* ``int64``: when using ``use_float=True``,
+    values greater than or equal to ``2^32`` are correctly returned.
 
 These capabilities are supported by all backends,
 with the following exceptions:
 
- * The ``yajl`` backend doesn't support ``multiple_values``,
-   ``detects_invalid_leading_zeros`` and ``detects_incomplete_json_tokens``.
-   It also doesn't support ``int64``
-   in platforms with a 32-bit C ``long`` type.
+* The ``yajl`` backend doesn't support ``multiple_values``,
+  ``detects_invalid_leading_zeros`` and ``detects_incomplete_json_tokens``.
+  It also doesn't support ``int64``
+  in platforms with a 32-bit C ``long`` type.
 
- * The ``python`` backend doesn't support ``c_comments``.
+* The ``python`` backend doesn't support ``c_comments``.
 
 
 Performance tips
