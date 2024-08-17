@@ -84,6 +84,10 @@ jobs:
           CIBW_ENVIRONMENT_WINDOWS: "IJSON_EMBED_YAJL=1"
           CIBW_TEST_COMMAND: "bash -c 'cd \"{project}\"; pytest -vv'"
           CIBW_TEST_REQUIRES: pytest cffi
+          # Our C extension made PyPy < 7.3.13 crash (a bug on their end)
+          # it doesn't make sense to build wheels for platforms not supported
+          # not supported by that version
+          CIBW_SKIP: pp{37,38}*
 
       - uses: actions/upload-artifact@v4
         with:
