@@ -10,7 +10,7 @@ from tests.test_base import JSON, JSON_EVENTS, JSON_PARSE_EVENTS, JSON_OBJECT,\
     generate_backend_specific_tests, JSON_KVITEMS
 
 
-class Misc:
+class TestMisc:
     """Miscellaneous unit tests"""
 
     def test_common_number_is_deprecated(self):
@@ -22,7 +22,7 @@ class Misc:
     def test_yajl2_c_loadable(self):
         spec = importlib.util.find_spec("ijson.backends._yajl2")
         if spec is None:
-            self.skipTest("yajl2_c is not built")
+            pytest.skip("yajl2_c is not built")
         importlib.util.module_from_spec(spec)
 
 
