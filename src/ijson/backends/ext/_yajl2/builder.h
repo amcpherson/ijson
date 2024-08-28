@@ -71,7 +71,7 @@ int builder_init(builder_t *builder, PyObject *map_type)
 static inline
 void builder_destroy(builder_t *builder)
 {
-	Py_DECREF(builder->value_stack);
+	Py_XDECREF(builder->value_stack);
 	Py_XDECREF(builder->map_type);
 	Py_XDECREF(builder->value);
 }
