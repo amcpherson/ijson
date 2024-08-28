@@ -210,7 +210,11 @@ static int basic_parse_basecoro_init(BasicParseBasecoro *self, PyObject *args, P
 	else {
 		callbacks = &decimal_callbacks;
 	}
-	M1_N(self->h = yajl_alloc(callbacks, NULL, (void *)&self->ctx));
+	self->h = yajl_alloc(callbacks, NULL, (void *)&self->ctx);
+	if (!self->h) {
+		PyErr_SetString(PyExc_RuntimeError, "Cannot allocate yajl handler");
+		return -1;
+	}
 	if (PyObject_IsTrue(allow_comments)) {
 		yajl_config(self->h, yajl_allow_comments, 1);
 	}
