@@ -27,10 +27,13 @@ static int async_reading_generator_init(async_reading_generator *self, PyObject 
 	self->file_exhausted = 0;
 
 	M1_Z(PyArg_ParseTuple(args, "OO", &self->file, &self->buf_size));
-	M1_Z(PyNumber_Check(self->buf_size));
-
 	Py_INCREF(self->file);
 	Py_INCREF(self->buf_size);
+	if (!PyNumber_Check(self->buf_size)) {
+		PyErr_SetString(PyExc_TypeError, "buf_size argument is not a number");
+		return -1;
+	}
+
 	M1_N(self->events = PyList_New(0));
 	return 0;
 }
