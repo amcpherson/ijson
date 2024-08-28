@@ -35,11 +35,12 @@ static int async_reading_generator_init(async_reading_generator *self, PyObject 
 	return 0;
 }
 
-void async_reading_generator_add_coro(async_reading_generator *self, pipeline_node *coro_pipeline)
+int async_reading_generator_add_coro(async_reading_generator *self, pipeline_node *coro_pipeline)
 {
-	self->coro = chain(self->events, coro_pipeline);
+	M1_N(self->coro = chain(self->events, coro_pipeline));
 	assert(("async_reading_generator works only with basic_parse_basecoro",
 		        BasicParseBasecoro_Check(self->coro)));
+	return 0;
 }
 
 static void async_reading_generator_dealloc(async_reading_generator *self)

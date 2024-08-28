@@ -38,10 +38,10 @@ static int kvitemsasync_init(KVItemsAsync *self, PyObject *args, PyObject *kwarg
 		{NULL}
 	};
 	M1_N(self->reading_generator = (async_reading_generator *)PyObject_CallObject((PyObject *)&AsyncReadingGeneratorType, reading_args));
-	async_reading_generator_add_coro(self->reading_generator, coro_pipeline);
+	int ret = async_reading_generator_add_coro(self->reading_generator, coro_pipeline);
 	Py_DECREF(kvitems_args);
 	Py_DECREF(reading_args);
-	return 0;
+	return ret;
 }
 
 static void kvitemsasync_dealloc(KVItemsAsync *self) {

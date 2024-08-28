@@ -34,8 +34,7 @@ static int parseasync_init(ParseAsync *self, PyObject *args, PyObject *kwargs)
 		{NULL}
 	};
 	M1_N(self->reading_generator = (async_reading_generator *)PyObject_CallObject((PyObject *)&AsyncReadingGeneratorType, args));
-	async_reading_generator_add_coro(self->reading_generator, coro_pipeline);
-	return 0;
+	return async_reading_generator_add_coro(self->reading_generator, coro_pipeline);
 }
 
 static void parseasync_dealloc(ParseAsync *self) {

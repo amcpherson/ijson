@@ -32,7 +32,11 @@ typedef struct {
 	int file_exhausted;
 } async_reading_generator;
 
-void async_reading_generator_add_coro(async_reading_generator *self, pipeline_node *coro_pipeline);
+/*
+ * Creates and connects the requested coroutine pipeline to this async generator.
+ * Returns -1 on failure, 0 on success.
+ */
+int async_reading_generator_add_coro(async_reading_generator *self, pipeline_node *coro_pipeline);
 
 extern PyTypeObject AsyncReadingGeneratorType;
 
