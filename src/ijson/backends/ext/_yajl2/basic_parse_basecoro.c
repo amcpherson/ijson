@@ -137,8 +137,9 @@ static yajl_callbacks float_callbacks = {
 };
 
 
-PyObject* ijson_yajl_parse(yajl_handle handle, char *buffer, size_t length)
+PyObject* ijson_yajl_parse(BasicParseBasecoro *coro, char *buffer, size_t length)
 {
+	yajl_handle handle = coro->h;
 	yajl_status status;
 	if (length == 0) {
 		status = yajl_complete_parse(handle);
@@ -232,7 +233,7 @@ static PyObject* basic_parse_basecoro_send(PyObject *self, PyObject *arg)
 	Py_buffer bufview;
 	N_M1(PyObject_GetBuffer(arg, &bufview, PyBUF_SIMPLE));
 	BasicParseBasecoro *gen = (BasicParseBasecoro *)self;
-	PyObject *ret = ijson_yajl_parse(gen->h, bufview.buf, bufview.len);
+	PyObject *ret = ijson_yajl_parse(gen, bufview.buf, bufview.len);
 	if (ret != NULL && bufview.len == 0) {
 		// This was the last one, let's end now
 		PyErr_SetNone(PyExc_StopIteration);
@@ -245,7 +246,7 @@ static PyObject* basic_parse_basecoro_send(PyObject *self, PyObject *arg)
 static PyObject* basic_parse_basecoro_close(PyObject *self, PyObject *args)
 {
 	BasicParseBasecoro *gen = (BasicParseBasecoro *)self;
-	N_N(ijson_yajl_parse(gen->h, NULL, 0));
+	N_N(ijson_yajl_parse(gen, NULL, 0));
 	Py_RETURN_NONE;
 }
 

@@ -39,6 +39,6 @@ extern PyTypeObject BasicParseBasecoro_Type;
 /**
  * yajl parsing routine wrapper that turns yajl errors into exceptions
  */
-PyObject* ijson_yajl_parse(yajl_handle handle, char *buffer, size_t length);
+PyObject* ijson_yajl_parse(BasicParseBasecoro *coro, char *buffer, size_t length);
 
 #endif // BASIC_PARSE_BASECORO_H
