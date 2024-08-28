@@ -16,6 +16,10 @@
 #include <yajl/yajl_common.h>
 #include <yajl/yajl_parse.h>
 
+typedef struct _yajl_parse_context {
+	PyObject *target_send;
+} yajl_parse_context;
+
 
 /**
  * basic_parse_basecoro coroutine object structure
@@ -23,7 +27,7 @@
 typedef struct {
     PyObject_HEAD
     yajl_handle h;
-    PyObject *target_send;
+    yajl_parse_context ctx;
 } BasicParseBasecoro;
 
 /**

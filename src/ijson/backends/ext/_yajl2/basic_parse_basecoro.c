@@ -20,7 +20,7 @@
  */
 static inline
 int add_event_and_value(void *ctx, PyObject *evt_name, PyObject *val) {
-	PyObject *target_send = (PyObject *)ctx;
+	PyObject *target_send = ((yajl_parse_context *)ctx)->target_send;
 	if (ParseBasecoro_Check(target_send)) {
 		Z_N(parse_basecoro_send_impl(target_send, evt_name, val));
 		Py_DECREF(val);
@@ -182,16 +182,16 @@ static int basic_parse_basecoro_init(BasicParseBasecoro *self, PyObject *args, P
 	PyObject *use_float = Py_False;
 
 	self->h = NULL;
-	self->target_send = NULL;
+	self->ctx.target_send = NULL;
 
 	char *kwlist[] = {"target_send", "allow_comments", "multiple_values",
 	                  "use_float", NULL};
 	if( !PyArg_ParseTupleAndKeywords(args, kwargs, "O|OOO", kwlist,
-	                                 &self->target_send, &allow_comments,
+	                                 &self->ctx.target_send, &allow_comments,
 	                                 &multiple_values, &use_float) ) {
 		return -1;
 	}
-	Py_INCREF(self->target_send);
+	Py_INCREF(self->ctx.target_send);
 
 	/*
 	 * Prepare yajl handle and configure it
@@ -205,7 +205,7 @@ static int basic_parse_basecoro_init(BasicParseBasecoro *self, PyObject *args, P
 	else {
 		callbacks = &decimal_callbacks;
 	}
-	M1_N(self->h = yajl_alloc(callbacks, NULL, (void *)self->target_send));
+	M1_N(self->h = yajl_alloc(callbacks, NULL, (void *)&self->ctx));
 	if (PyObject_IsTrue(allow_comments)) {
 		yajl_config(self->h, yajl_allow_comments, 1);
 	}
@@ -221,7 +221,7 @@ static void basic_parse_basecoro_dealloc(BasicParseBasecoro *self)
 	if (self->h) {
 		yajl_free(self->h);
 	}
-	Py_XDECREF(self->target_send);
+	Py_XDECREF(self->ctx.target_send);
 	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
