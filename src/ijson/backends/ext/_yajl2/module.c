@@ -23,6 +23,8 @@
 #include "kvitems_async.h"
 #include "kvitems_basecoro.h"
 
+#define MODULE_NAME "_yajl2"
+
 enames_t enames;
 PyObject *dot, *item, *dotitem;
 PyObject *JSONError;
@@ -31,6 +33,13 @@ PyObject *Decimal;
 
 static PyMethodDef yajl2_methods[] = {
 	{NULL, NULL, 0, NULL}        /* Sentinel */
+};
+
+static int _yajl2_mod_exec(PyObject *m);
+
+static PyModuleDef_Slot yajl2_slots[] = {
+	{Py_mod_exec, _yajl2_mod_exec},
+	{0, NULL},
 };
 
 PyObject* ijson_return_self(PyObject *self)
@@ -47,21 +56,29 @@ PyObject* ijson_return_none(PyObject *self)
 /* Module initialization */
 
 /* Support for Python 2/3 */
-static struct PyModuleDef moduledef = {PyModuleDef_HEAD_INIT, "_yajl2", "wrapper for yajl2 methods", -1, yajl2_methods};
-
-#define ADD_TYPE(name, type) \
-	{ \
-		type.tp_new = PyType_GenericNew; \
-		X_LZ(PyType_Ready(&type), NULL); \
-		Py_INCREF(&type); \
-		PyModule_AddObject(m, name, (PyObject *)&type); \
-	}
+static struct PyModuleDef moduledef = {
+	.m_base = PyModuleDef_HEAD_INIT,
+	.m_name = MODULE_NAME,
+	.m_doc = "wrapper for yajl2 methods",
+	.m_size = 0,
+	.m_methods = yajl2_methods,
+	.m_slots = yajl2_slots,
+};
 
 PyMODINIT_FUNC PyInit__yajl2(void)
 {
-	PyObject *m = PyModule_Create(&moduledef);
-	N_N(m);
+	return PyModuleDef_Init(&moduledef);
+}
 
+static int _yajl2_mod_exec(PyObject *m)
+{
+#define ADD_TYPE(name, type) \
+	{ \
+		type.tp_new = PyType_GenericNew; \
+		M1_M1(PyType_Ready(&type)); \
+		Py_INCREF(&type); \
+		PyModule_AddObject(m, name, (PyObject *)&type); \
+	}
 	ADD_TYPE("basic_parse_basecoro", BasicParseBasecoro_Type);
 	ADD_TYPE("basic_parse", BasicParseGen_Type);
 	ADD_TYPE("parse_basecoro", ParseBasecoro_Type);
@@ -95,16 +112,15 @@ PyMODINIT_FUNC PyInit__yajl2(void)
 	// Import globally-used names
 	PyObject *ijson_common = PyImport_ImportModule("ijson.common");
 	PyObject *decimal_module = PyImport_ImportModule("decimal");
-	N_N(ijson_common);
-	N_N(decimal_module);
+	M1_N(ijson_common);
+	M1_N(decimal_module);
 
 	JSONError = PyObject_GetAttrString(ijson_common, "JSONError");
 	IncompleteJSONError = PyObject_GetAttrString(ijson_common, "IncompleteJSONError");
 	Decimal = PyObject_GetAttrString(decimal_module, "Decimal");
-	N_N(JSONError);
-	N_N(IncompleteJSONError);
-	N_N(Decimal);
+	M1_N(JSONError);
+	M1_N(IncompleteJSONError);
+	M1_N(Decimal);
 
-	return m;
-
+	return 0;
 }
