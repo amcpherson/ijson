@@ -80,6 +80,7 @@ jobs:
           # it doesn't make sense to build wheels for platforms not supported
           # not supported by that version
           CIBW_SKIP: pp{37,38,39}*
+          CIBW_FREE_THREADED_SUPPORT: 1
 
       - uses: actions/upload-artifact@v4
         with:
