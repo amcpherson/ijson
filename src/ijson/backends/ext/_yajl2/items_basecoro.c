@@ -42,12 +42,13 @@ static void items_basecoro_dealloc(ItemsBasecoro *self)
 PyObject* items_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *event, PyObject *value)
 {
 	ItemsBasecoro *coro = (ItemsBasecoro *)self;
+	enames_t enames = coro->module_state->enames;
 
 	if (builder_isactive(&coro->builder)) {
 		coro->object_depth += (event == enames.start_map_ename || event == enames.start_array_ename);
 		coro->object_depth -= (event == enames.end_map_ename || event == enames.end_array_ename);
 		if (coro->object_depth > 0) {
-			N_M1( builder_event(&coro->builder, event, value) );
+			N_M1( builder_event(&coro->builder, enames, event, value) );
 		}
 		else {
 			PyObject *retval = builder_value(&coro->builder);
@@ -62,7 +63,7 @@ PyObject* items_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *eve
 		if (cmp) {
 			if (event == enames.start_map_ename || event == enames.start_array_ename) {
 				coro->object_depth = 1;
-				N_M1(builder_event(&coro->builder, event, value));
+				N_M1(builder_event(&coro->builder, enames, event, value));
 			}
 			else {
 				CORO_SEND(coro->target_send, value);

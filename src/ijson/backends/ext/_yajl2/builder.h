@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include "common.h"
+#include "event_names.h"
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
@@ -150,7 +151,7 @@ int _builder_add(builder_t *builder, PyObject *value)
  * @return 0 if successful, -1 in case of an error
  */
 static inline
-int builder_event(builder_t *builder, PyObject *ename, PyObject *value)
+int builder_event(builder_t *builder, enames_t enames, PyObject *ename, PyObject *value)
 {
 	builder->active = 1;
 

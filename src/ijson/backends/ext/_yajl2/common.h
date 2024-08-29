@@ -14,8 +14,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include "event_names.h"
-
 #define STRING_FROM_UTF8(val, len) PyUnicode_FromStringAndSize((const char *)val, len)
 
 /*
@@ -41,13 +39,6 @@
 #define Z_NZ(stmt)    RETURN_X_IF_COND(stmt,    0, != 0)
 #define X_LZ(stmt, X) RETURN_X_IF_COND(stmt,    X, < 0)
 #define X_N(stmt, X)  RETURN_X_IF_COND(stmt,    X, == NULL)
-
-extern enames_t enames;
-extern PyObject *dot, *item, *dotitem;
-
-extern PyObject *JSONError;
-extern PyObject *IncompleteJSONError;
-extern PyObject *Decimal;
 
 #define CORO_SEND(target_send, event) \
 	{ \

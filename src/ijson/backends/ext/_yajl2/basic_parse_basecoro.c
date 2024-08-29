@@ -14,6 +14,10 @@
 #include "common.h"
 #include "parse_basecoro.h"
 
+static inline enames_t get_enames(void *ctx)
+{
+	return ((yajl_parse_context *)ctx)->module_state->enames;
+}
 
 /*
  * The YAJL callbacks, they add (evt,value) to a list
@@ -28,7 +32,7 @@ int add_event_and_value(void *ctx, PyObject *evt_name, PyObject *val) {
 	}
 	PyObject *tuple;
 	Z_N(tuple = PyTuple_New(2));
-	Py_INCREF(evt_name); // this is an element of our static enames var
+	Py_INCREF(evt_name); // this is an element of our module state's enames member
 	PyTuple_SET_ITEM(tuple, 0, evt_name);
 	PyTuple_SET_ITEM(tuple, 1, val);
 	CORO_SEND(target_send, tuple);
@@ -38,27 +42,27 @@ int add_event_and_value(void *ctx, PyObject *evt_name, PyObject *val) {
 
 static int null(void * ctx) {
 	Py_INCREF(Py_None);
-	return add_event_and_value(ctx, enames.null_ename, Py_None);
+	return add_event_and_value(ctx, get_enames(ctx).null_ename, Py_None);
 }
 
 static int boolean(void * ctx, int val) {
 	PyObject *bval = val == 0 ? Py_False : Py_True;
 	Py_INCREF(bval);
-	return add_event_and_value(ctx, enames.boolean_ename, bval);
+	return add_event_and_value(ctx, get_enames(ctx).boolean_ename, bval);
 }
 
 static int yajl_integer(void *ctx, long long val)
 {
 	PyObject *ival;
 	Z_N(ival = PyLong_FromLongLong(val))
-	return add_event_and_value(ctx, enames.number_ename, ival);
+	return add_event_and_value(ctx, get_enames(ctx).number_ename, ival);
 }
 
 static int yajl_double(void *ctx, double val)
 {
 	PyObject *dval;
 	Z_N(dval = PyFloat_FromDouble(val))
-	return add_event_and_value(ctx, enames.number_ename, dval);
+	return add_event_and_value(ctx, get_enames(ctx).number_ename, dval);
 }
 
 static int number(void * ctx, const char *numberVal, size_t numberLen) {
@@ -88,42 +92,42 @@ static int number(void * ctx, const char *numberVal, size_t numberLen) {
 		        val != NULL && endptr != nval));
 	}
 	else {
-		Z_N(val = PyObject_CallFunction(Decimal, "s#", numberVal, numberLen));
+		Z_N(val = PyObject_CallFunction(((yajl_parse_context *)ctx)->module_state->Decimal, "s#", numberVal, numberLen));
 	}
 
-	return add_event_and_value(ctx, enames.number_ename, val);
+	return add_event_and_value(ctx, get_enames(ctx).number_ename, val);
 }
 
 static int string_cb(void * ctx, const unsigned char *stringVal, size_t stringLen) {
 	PyObject *val;
 	Z_N(val = PyUnicode_FromStringAndSize((char *)stringVal, stringLen))
-	return add_event_and_value(ctx, enames.string_ename, val);
+	return add_event_and_value(ctx, get_enames(ctx).string_ename, val);
 }
 
 static int start_map(void *ctx) {
 	Py_INCREF(Py_None);
-	return add_event_and_value(ctx, enames.start_map_ename, Py_None);
+	return add_event_and_value(ctx, get_enames(ctx).start_map_ename, Py_None);
 }
 
 static int map_key(void *ctx, const unsigned char *key, size_t stringLen) {
 	PyObject *val;
 	Z_N(val = STRING_FROM_UTF8(key, stringLen))
-	return add_event_and_value(ctx, enames.map_key_ename, val);
+	return add_event_and_value(ctx, get_enames(ctx).map_key_ename, val);
 }
 
 static int end_map(void *ctx) {
 	Py_INCREF(Py_None);
-	return add_event_and_value(ctx, enames.end_map_ename, Py_None);
+	return add_event_and_value(ctx, get_enames(ctx).end_map_ename, Py_None);
 }
 
 static int start_array(void *ctx) {
 	Py_INCREF(Py_None);
-	return add_event_and_value(ctx, enames.start_array_ename, Py_None);
+	return add_event_and_value(ctx, get_enames(ctx).start_array_ename, Py_None);
 }
 
 static int end_array(void *ctx) {
 	Py_INCREF(Py_None);
-	return add_event_and_value(ctx, enames.end_array_ename, Py_None);
+	return add_event_and_value(ctx, get_enames(ctx).end_array_ename, Py_None);
 }
 
 static yajl_callbacks decimal_callbacks = {
@@ -159,7 +163,7 @@ PyObject* ijson_yajl_parse(BasicParseBasecoro *coro, char *buffer, size_t length
 				error_obj = PyBytes_FromString((char *)perror);
 				PyErr_Clear();
 			}
-			PyErr_SetObject(IncompleteJSONError, error_obj);
+			PyErr_SetObject(coro->ctx.module_state->IncompleteJSONError, error_obj);
 			if (error_obj) {
 				Py_DECREF(error_obj);
 			}

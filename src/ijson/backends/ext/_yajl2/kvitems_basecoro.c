@@ -54,6 +54,7 @@ static int kvitems_basecoro_start_new_member(KVItemsBasecoro *coro, PyObject *ke
 PyObject* kvitems_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *event, PyObject *value)
 {
 	KVItemsBasecoro *coro = (KVItemsBasecoro *)self;
+	enames_t enames = coro->module_state->enames;
 
 	PyObject *retval = NULL;
 	PyObject *retkey = NULL;
@@ -62,7 +63,7 @@ PyObject* kvitems_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *e
 		coro->object_depth -= (event == enames.end_map_ename);
 		if ((event != enames.map_key_ename || coro->object_depth != 0) &&
 		    (event != enames.end_map_ename || coro->object_depth != -1)) {
-			N_M1(builder_event(&coro->builder, event, value));
+			N_M1(builder_event(&coro->builder, enames, event, value));
 		}
 		else {
 			retval = builder_value(&coro->builder);

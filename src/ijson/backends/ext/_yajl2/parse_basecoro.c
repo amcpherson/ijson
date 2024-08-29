@@ -50,6 +50,10 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 {
 	ParseBasecoro *gen = (ParseBasecoro *)self;
 	Py_ssize_t npaths = PyList_Size(gen->path);
+	enames_t enames = gen->module_state->enames;
+	PyObject *dot = gen->module_state->dot;
+	PyObject *dotitem = gen->module_state->dotitem;
+	PyObject *item = gen->module_state->item;
 
 	// Calculate current prefix
 	PyObject *prefix;

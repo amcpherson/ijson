@@ -26,12 +26,6 @@
 
 #define MODULE_NAME "_yajl2"
 
-enames_t enames;
-PyObject *dot, *item, *dotitem;
-PyObject *JSONError;
-PyObject *IncompleteJSONError;
-PyObject *Decimal;
-
 static PyMethodDef yajl2_methods[] = {
 	{NULL, NULL, 0, NULL}        /* Sentinel */
 };
@@ -120,10 +114,13 @@ static int _yajl2_mod_exec(PyObject *m)
 	ADD_TYPE("kvitems_async", KVItemsAsync_Type);
 	ADD_TYPE("items_async", ItemsAsync_Type);
 
-	dot = STRING_FROM_UTF8(".", 1);
-	item = STRING_FROM_UTF8("item", 4);
-	dotitem = STRING_FROM_UTF8(".item", 5);
-#define INIT_ENAME(x) enames.x##_ename = STRING_FROM_UTF8(#x, strlen(#x))
+	yajl2_state *state;
+	M1_N(state = get_state(m));
+	state->dot = STRING_FROM_UTF8(".", 1);
+	state->item = STRING_FROM_UTF8("item", 4);
+	state->dotitem = STRING_FROM_UTF8(".item", 5);
+
+#define INIT_ENAME(x) state->enames.x##_ename = STRING_FROM_UTF8(#x, strlen(#x))
 	INIT_ENAME(null);
 	INIT_ENAME(boolean);
 	INIT_ENAME(integer);
@@ -142,12 +139,12 @@ static int _yajl2_mod_exec(PyObject *m)
 	M1_N(ijson_common);
 	M1_N(decimal_module);
 
-	JSONError = PyObject_GetAttrString(ijson_common, "JSONError");
-	IncompleteJSONError = PyObject_GetAttrString(ijson_common, "IncompleteJSONError");
-	Decimal = PyObject_GetAttrString(decimal_module, "Decimal");
-	M1_N(JSONError);
-	M1_N(IncompleteJSONError);
-	M1_N(Decimal);
+	state->JSONError = PyObject_GetAttrString(ijson_common, "JSONError");
+	state->IncompleteJSONError = PyObject_GetAttrString(ijson_common, "IncompleteJSONError");
+	state->Decimal = PyObject_GetAttrString(decimal_module, "Decimal");
+	M1_N(state->JSONError);
+	M1_N(state->IncompleteJSONError);
+	M1_N(state->Decimal);
 
 	return 0;
 }

@@ -3,7 +3,7 @@
 ## Development
 
 * Added support for PEP 489 multi-phase initialisation
-  for our C extension.
+  and per-module state for our C extension.
 * Added `ijson.ALL_BACKENDS` constant
   listing all supported backends
   (which might or not be available at runtime).
