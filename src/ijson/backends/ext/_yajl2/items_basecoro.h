@@ -12,6 +12,7 @@
 #define ITEMS_BASECORO_H
 
 #include "builder.h"
+#include "module_state.h"
 
 /**
  * items_basecoro coroutine object structure
@@ -22,6 +23,7 @@ typedef struct {
     PyObject *target_send;
     PyObject *prefix;
     int object_depth;
+    yajl2_state *module_state;
 } ItemsBasecoro;
 
 /**

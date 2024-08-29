@@ -15,6 +15,7 @@
 #include <Python.h>
 
 #include "builder.h"
+#include "module_state.h"
 
 /**
  * kvitems_basecoro coroutine object structure
@@ -26,6 +27,7 @@ typedef struct {
     PyObject *prefix;
     PyObject *key;
     int object_depth;
+    yajl2_state *module_state;
 } KVItemsBasecoro;
 
 /**

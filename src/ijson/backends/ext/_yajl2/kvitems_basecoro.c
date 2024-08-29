@@ -19,6 +19,7 @@ static int kvitems_basecoro_init(KVItemsBasecoro *self, PyObject *args, PyObject
 	self->target_send = NULL;
 	self->prefix = NULL;
 	self->key = NULL;
+	M1_N(self->module_state = get_state_from_imported_module());
 	builder_create(&self->builder);
 
 	PyObject *map_type;

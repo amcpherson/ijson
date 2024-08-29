@@ -14,6 +14,8 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#include "module_state.h"
+
 /**
  * parse_basecoro coroutine object structure
  */
@@ -21,6 +23,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *target_send;
     PyObject *path;
+    yajl2_state *module_state;
 } ParseBasecoro;
 
 /**

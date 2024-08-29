@@ -16,7 +16,10 @@
 #include <yajl/yajl_common.h>
 #include <yajl/yajl_parse.h>
 
+#include "module_state.h"
+
 typedef struct _yajl_parse_context {
+	yajl2_state *module_state;
 	PyObject *target_send;
 } yajl_parse_context;
 

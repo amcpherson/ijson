@@ -192,6 +192,7 @@ static int basic_parse_basecoro_init(BasicParseBasecoro *self, PyObject *args, P
 		return -1;
 	}
 	Py_INCREF(self->ctx.target_send);
+	M1_N(self->ctx.module_state = get_state_from_imported_module());
 
 	/*
 	 * Prepare yajl handle and configure it

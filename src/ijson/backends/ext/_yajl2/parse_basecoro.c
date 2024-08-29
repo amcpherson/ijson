@@ -21,6 +21,7 @@ static int parse_basecoro_init(ParseBasecoro *self, PyObject *args, PyObject *kw
 	M1_Z(PyArg_ParseTuple(args, "O", &self->target_send));
 	Py_INCREF(self->target_send);
 	M1_N(self->path = PyList_New(0));
+	M1_N(self->module_state = get_state_from_imported_module());
 
 	PyObject *empty;
 	M1_N(empty = STRING_FROM_UTF8("", 0));

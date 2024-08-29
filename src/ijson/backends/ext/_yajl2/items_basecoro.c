@@ -19,6 +19,7 @@ static int items_basecoro_init(ItemsBasecoro *self, PyObject *args, PyObject *kw
 	self->target_send = NULL;
 	self->prefix = NULL;
 	self->object_depth = 0;
+	M1_N(self->module_state = get_state_from_imported_module());
 	builder_create(&self->builder);
 
 	PyObject *map_type;

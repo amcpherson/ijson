@@ -7,6 +7,7 @@
  * (c) UWA - The University of Western Australia, 2016
  * Copyright by UWA (in the framework of the ICRAR)
  */
+#include <assert.h>
 
 #include "common.h"
 #include "async_reading_generator.h"
@@ -60,10 +61,36 @@ static struct PyModuleDef moduledef = {
 	.m_base = PyModuleDef_HEAD_INIT,
 	.m_name = MODULE_NAME,
 	.m_doc = "wrapper for yajl2 methods",
-	.m_size = 0,
+	.m_size = sizeof(yajl2_state),
 	.m_methods = yajl2_methods,
 	.m_slots = yajl2_slots,
 };
+
+static yajl2_state *get_state(PyObject *module)
+{
+	yajl2_state *module_state = PyModule_GetState(module);
+	if (!module_state) {
+		PyErr_SetString(PyExc_RuntimeError, "No module state :(");
+	}
+	return module_state;
+}
+
+yajl2_state *get_state_from_imported_module()
+{
+#if defined(PYPY_VERSION_NUM) && PYPY_VERSION_NUM <= 0x07031000
+	// Until 7.3.17 PyPy didn't correctly export PyImport_ImportModuleLevel
+	// see https://github.com/pypy/pypy/issues/5013
+	PyObject *module = PyImport_ImportModule("ijson.backends." MODULE_NAME);
+#else
+	PyObject *module = PyImport_ImportModuleLevel(
+	    MODULE_NAME, PyEval_GetGlobals(), Py_None, NULL, 1
+	);
+#endif
+	N_N(module);
+	yajl2_state *module_state = get_state(module);
+	Py_DECREF(module);
+	return module_state;
+}
 
 PyMODINIT_FUNC PyInit__yajl2(void)
 {
