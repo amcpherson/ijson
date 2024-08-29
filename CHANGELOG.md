@@ -3,7 +3,8 @@
 ## Development
 
 * Added support for PEP 489 multi-phase initialisation
-  and per-module state for our C extension.
+  and per-module state for our C extension,
+  allowing us to support sub-interpreters with per-interpreter GIL.
 * Added `ijson.ALL_BACKENDS` constant
   listing all supported backends
   (which might or not be available at runtime).

@@ -34,6 +34,9 @@ static int _yajl2_mod_exec(PyObject *m);
 
 static PyModuleDef_Slot yajl2_slots[] = {
 	{Py_mod_exec, _yajl2_mod_exec},
+#if PY_VERSION_HEX >= 0x030C0000
+	{Py_mod_multiple_interpreters, Py_MOD_PER_INTERPRETER_GIL_SUPPORTED},
+#endif
 	{0, NULL},
 };
 
