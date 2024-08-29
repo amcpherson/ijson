@@ -14,6 +14,8 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#include "event_names.h"
+
 #define STRING_FROM_UTF8(val, len) PyUnicode_FromStringAndSize((const char *)val, len)
 
 /*
@@ -39,25 +41,6 @@
 #define Z_NZ(stmt)    RETURN_X_IF_COND(stmt,    0, != 0)
 #define X_LZ(stmt, X) RETURN_X_IF_COND(stmt,    X, < 0)
 #define X_N(stmt, X)  RETURN_X_IF_COND(stmt,    X, == NULL)
-
-/*
- * A structure (and variable) holding utf-8 strings with the event names
- * This way we avoid calculating them every time, and we can compare them
- * via direct equality comparison instead of via strcmp.
- */
-typedef struct _event_names {
-	PyObject *null_ename;
-	PyObject *boolean_ename;
-	PyObject *integer_ename;
-	PyObject *double_ename;
-	PyObject *number_ename;
-	PyObject *string_ename;
-	PyObject *start_map_ename;
-	PyObject *map_key_ename;
-	PyObject *end_map_ename;
-	PyObject *start_array_ename;
-	PyObject *end_array_ename;
-} enames_t;
 
 extern enames_t enames;
 extern PyObject *dot, *item, *dotitem;
