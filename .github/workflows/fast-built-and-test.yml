@@ -44,9 +44,7 @@ jobs:
         run: python setup.py develop
 
       - name: Install test dependencies
-        env:
-          CFFI_DEPENDENCY: ${{ matrix.python_version == '3.13-dev' && 'cffi==1.17.0rc1' || 'cffi' }}
-        run: pip install pytest $CFFI_DEPENDENCY
+        run: pip install -r test-requirements.txt
 
       - name: Run unittests
         run: pytest -vv
