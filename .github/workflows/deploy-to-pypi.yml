@@ -61,22 +61,14 @@ jobs:
         with:
           submodules: true
 
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: '3.12'
-
       - uses: docker/setup-qemu-action@v3
         if: ${{ matrix.arch == 'aarch64' && matrix.os == 'ubuntu-latest' }}
         name: Set up QEMU
 
-      - name: Install cibuildwheel
-        run: |
-          python -m pip install cibuildwheel
-
       - name: Build wheels
-        run: |
-          python -m cibuildwheel --output-dir wheelhouse
+        uses: pypa/cibuildwheel@v2.20.0
+        with:
+          output-dir: wheelhouse
         env:
           CIBW_BEFORE_ALL: "bash -c 'cd \"{project}\"; sh .github/tools/install_yajl.sh'"
           CIBW_BUILD_VERBOSITY: 1
