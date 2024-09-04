@@ -58,24 +58,24 @@ def yajl_present():
     compiler = ccompiler.new_compiler(verbose=1)
     sysconfig.customize_compiler(compiler) # CC, CFLAGS, LDFLAGS, etc
 
-    fname = tempfile.mktemp(".c", "yajl_version")
+    yajl_version_test_file = tempfile.NamedTemporaryFile(suffix=".c", prefix="yajl_version", delete=False)
     try:
-        with open(fname, "wt") as f:
-            f.write('''
-            #include <yajl/yajl_version.h>
-            int main(int args, char **argv)
-            {
-            #if YAJL_MAJOR != 2
-                fail to compile
-            #else
-                yajl_version();
-            #endif
-                return 0;
-            }
-            ''')
+        yajl_version_test_file.write(b'''
+        #include <yajl/yajl_version.h>
+        int main(int args, char **argv)
+        {
+        #if YAJL_MAJOR != 2
+            fail to compile
+        #else
+            yajl_version();
+        #endif
+            return 0;
+        }
+        ''')
+        yajl_version_test_file.close()
 
         try:
-            objs = compiler.compile([fname])
+            objs = compiler.compile([yajl_version_test_file.name])
             compiler.link_shared_lib(objs, 'a', libraries=["yajl"])
             return True
         finally:
@@ -86,8 +86,7 @@ def yajl_present():
     except:
         return False
     finally:
-        if os.path.exists(fname):
-            os.remove(fname)
+        os.remove(yajl_version_test_file.name)
 
 
 def patch_yajl_sources():
