@@ -77,7 +77,7 @@ static yajl2_state *get_state(PyObject *module)
 
 yajl2_state *get_state_from_imported_module()
 {
-#if defined(PYPY_VERSION_NUM) && PYPY_VERSION_NUM <= 0x07031000
+#if defined(PYPY_VERSION_NUM) && PYPY_VERSION_NUM <= 0x07031100
 	// Until 7.3.17 PyPy didn't correctly export PyImport_ImportModuleLevel
 	// see https://github.com/pypy/pypy/issues/5013
 	PyObject *module = PyImport_ImportModule("ijson.backends." MODULE_NAME);
