@@ -184,17 +184,18 @@ static int basic_parse_basecoro_init(BasicParseBasecoro *self, PyObject *args, P
 	PyObject *allow_comments = Py_False;
 	PyObject *multiple_values = Py_False;
 	PyObject *use_float = Py_False;
+	PyObject *target_send = NULL;
 
 	self->h = NULL;
-	self->ctx.target_send = NULL;
 
 	char *kwlist[] = {"target_send", "allow_comments", "multiple_values",
 	                  "use_float", NULL};
 	if( !PyArg_ParseTupleAndKeywords(args, kwargs, "O|OOO", kwlist,
-	                                 &self->ctx.target_send, &allow_comments,
+	                                 &target_send, &allow_comments,
 	                                 &multiple_values, &use_float) ) {
 		return -1;
 	}
+	self->ctx.target_send = target_send;
 	Py_INCREF(self->ctx.target_send);
 	M1_N(self->ctx.module_state = get_state_from_imported_module());
 
