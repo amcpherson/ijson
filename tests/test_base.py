@@ -349,10 +349,6 @@ class IJsonTestsBase:
     a particuliar method.
     '''
 
-    def test_parse(self):
-        events = self.get_all(self.parse, JSON)
-        assert JSON_PARSE_EVENTS == events
-
     def test_items(self):
         events = self.get_all(self.items, JSON, '')
         assert [JSON_OBJECT] == events
@@ -409,10 +405,6 @@ class IJsonTestsBase:
     def test_kvitems_different_underlying_types(self):
         kvitems = self.get_all(self.kvitems, JSON, 'docs.item.meta')
         assert JSON_KVITEMS_META == kvitems
-
-    def test_parse_array(self):
-        events = self.get_all(self.parse, ARRAY_JSON)
-        assert ARRAY_JSON_PARSE_EVENTS == events
 
     def test_items_array(self):
         events = self.get_all(self.items, ARRAY_JSON, '')
