@@ -18,6 +18,8 @@
 * Restructured source code so all code lives under `src/`,
   and the `ijson.backends._yajl2` extension under `src/ijson/backends/ext/_yajl2`.
   This allows C backend tests to actually run on cibuildwheel.
+* Fixed several potential stability issues in C backend
+  around correct error handling.
 * Removed tox.
 
 ## [3.3.0]
