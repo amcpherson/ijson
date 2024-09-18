@@ -47,7 +47,7 @@ def get_yajl(version):
     yajl.yajl_get_error.restype = POINTER(c_char)
     return yajl
 
-def _callback(send, use_float, field, event, func_type, func):
+def _make_callback(send, use_float, field, event, func_type, func):
     if use_float and field == 'number':
         return func_type()
     def c_callback(_context, *args):
@@ -59,7 +59,7 @@ def make_callbaks(send, use_float, yajl_version):
     callback_data = _get_callback_data(yajl_version)
     class Callbacks(Structure):
         _fields_ = [(name, type) for name, _, type, _ in callback_data]
-    return Callbacks(*[_callback(send, use_float, *data) for data in callback_data])
+    return Callbacks(*[_make_callback(send, use_float, *data) for data in callback_data])
 
 def yajl_get_error(yajl, handle, buffer):
     perror = yajl.yajl_get_error(handle, 1, buffer, len(buffer))
