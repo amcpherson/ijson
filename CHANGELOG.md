@@ -20,6 +20,8 @@
   This allows C backend tests to actually run on cibuildwheel.
 * Fixed several potential stability issues in C backend
   around correct error handling.
+* Fixed potential issue with `yajl` and `yajl2` backends
+  where crashes could occur at interpreter shutdown.
 * Removed tox.
 
 ## [3.3.0]

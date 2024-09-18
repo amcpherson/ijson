@@ -14,6 +14,7 @@ C_LONG = CFUNCTYPE(c_int, c_void_p, c_long)
 C_LONGLONG = CFUNCTYPE(c_int, c_void_p, c_longlong)
 C_DOUBLE = CFUNCTYPE(c_int, c_void_p, c_double)
 C_STR = CFUNCTYPE(c_int, c_void_p, POINTER(c_ubyte), c_uint)
+_all_cfunct_types = (C_EMPTY, C_INT, C_LONG, C_LONGLONG, C_DOUBLE, C_STR)
 
 
 def _get_callback_data(yajl_version):
@@ -59,7 +60,7 @@ def make_callbaks(send, use_float, yajl_version):
     callback_data = _get_callback_data(yajl_version)
     class Callbacks(Structure):
         _fields_ = [(name, type) for name, _, type, _ in callback_data]
-    return Callbacks(*[_make_callback(send, use_float, *data) for data in callback_data])
+    return Callbacks(*[_make_callback(send, use_float, *data) for data in callback_data]), _all_cfunct_types
 
 def yajl_get_error(yajl, handle, buffer):
     perror = yajl.yajl_get_error(handle, 1, buffer, len(buffer))
