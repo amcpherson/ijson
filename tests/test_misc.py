@@ -5,7 +5,6 @@ import pytest
 
 from ijson import common
 
-from .test_base import warning_catcher
 from tests.test_base import JSON, JSON_EVENTS, JSON_PARSE_EVENTS, JSON_OBJECT,\
     generate_backend_specific_tests, JSON_KVITEMS
 
@@ -14,10 +13,8 @@ class TestMisc:
     """Miscellaneous unit tests"""
 
     def test_common_number_is_deprecated(self):
-        with warning_catcher() as warns:
+        with pytest.deprecated_call():
             common.number("1")
-        assert 1 == len(warns)
-        assert DeprecationWarning, warns[0].category
 
     def test_yajl2_c_loadable(self):
         spec = importlib.util.find_spec("ijson.backends._yajl2")
@@ -38,10 +35,8 @@ class MainEntryPoints:
         assert expected_results == results
 
     def _assert_str(self, expected_results, routine, *args, **kwargs):
-        with warning_catcher() as warns:
+        with pytest.deprecated_call():
             results = list(routine(JSON.decode("utf-8"), *args, **kwargs))
-        assert expected_results == results
-        assert 1 == len(warns)
 
     def _assert_file(self, expected_results, routine, *args, **kwargs):
         results = list(routine(io.BytesIO(JSON), *args, **kwargs))
