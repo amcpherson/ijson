@@ -1,7 +1,5 @@
 from ijson import utils
 
-from .test_base import generate_test_cases
-
 
 def bytesiter(x):
     for b in x:
@@ -15,6 +13,3 @@ def get_all(routine, json_content, *args, **kwargs):
         coro.send(datum)
     coro.close()
     return events
-
-
-generate_test_cases(globals(), 'Coroutines', '_coro')
