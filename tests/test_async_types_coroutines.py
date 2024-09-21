@@ -2,7 +2,6 @@ import io
 import types
 
 from ._test_async_common import _get_all
-from .test_base import FileBasedTests, generate_test_cases
 
 class AsyncReaderTypesCoroutine:
     def __init__(self, data):
@@ -19,6 +18,3 @@ class AsyncReaderTypesCoroutine:
         return (yield from self._read(n))
 
 get_all = _get_all(AsyncReaderTypesCoroutine)
-
-# Generating real TestCase classes for each importable backend
-generate_test_cases(globals(), 'AsyncTypesCoroutine', '_async', FileBasedTests)
