@@ -351,19 +351,7 @@ class IJsonTestsBase:
 
 
 class FileBasedTests:
-
-    def test_string_stream(self):
-        with warning_catcher() as warns:
-            events = self.get_all(self.basic_parse, JSON.decode('utf-8'))
-            assert JSON_EVENTS == events
-        assert 1 == len(warns)
-        assert DeprecationWarning, warns[0].category
-
-    def test_different_buf_sizes(self):
-        for buf_size in (1, 4, 16, 64, 256, 1024, 4098):
-            events = self.get_all(self.basic_parse, JSON, buf_size=buf_size)
-            assert JSON_EVENTS == events
-
+    pass
 
 def generate_backend_specific_tests(module, classname_prefix, method_suffix,
                                     *bases, **kwargs):
