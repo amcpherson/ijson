@@ -6,6 +6,7 @@ from .test_base import (JSON, FileBasedTests, JSON_EVENTS,
     PARTIAL_ARRAY_JSONS, warning_catcher, INVALID_JSONS,
     generate_test_cases)
 
+from .support.generators import get_all
 
 
 class SingleReadFile:
@@ -133,16 +134,6 @@ class GeneratorSpecificTests(FileBasedTests):
             results = self._test_common_routine(common.items, 'list.item')
         assert [{"o1": 1}, {"o2": 2}] == results
         assert 1 == len(warns)
-
-
-def _reader(json):
-    if type(json) == bytes:
-        return io.BytesIO(json)
-    return io.StringIO(json)
-
-
-def get_all(routine, json_content, *args, **kwargs):
-    return list(routine(_reader(json_content), *args, **kwargs))
 
 
 generate_test_cases(globals(), 'Generators', '_gen', GeneratorSpecificTests)

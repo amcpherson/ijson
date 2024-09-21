@@ -50,7 +50,7 @@ class BackendAdaptor:
 from .test_async import get_all as get_all_async
 from .test_async_types_coroutines import get_all as get_all_async_types_coroutines
 from .test_coroutines import get_all as get_all_coro
-from .test_generators import get_all as get_all_gen
+from .support.generators import get_all as get_all_gen
 
 _pull_backend_adaptors = [
     backend_adaptor
