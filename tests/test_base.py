@@ -1,15 +1,6 @@
 # -*- coding:utf-8 -*-
 import collections
-import ctypes
 from decimal import Decimal
-import itertools
-import threading
-
-import pytest
-
-import ijson
-from ijson import common
-import warnings
 
 
 JSON = b'''
@@ -314,70 +305,3 @@ EMPTY_MEMBER_TEST_CASES = {
         [{"": {"": 1}, "a": 2}]
     )
 }
-
-
-class warning_catcher:
-    '''Encapsulates proper warning catch-all logic in python 2.7 and 3'''
-
-    def __init__(self):
-        self.catcher = warnings.catch_warnings(record=True)
-
-    def __enter__(self):
-        ret = self.catcher.__enter__()
-        return ret
-
-    def __exit__(self, *args):
-        self.catcher.__exit__(*args)
-
-
-class BackendSpecificTestCase:
-    '''
-    Base class for backend-specific tests, gives ability to easily and
-    generically reference different methods on the backend. It requires
-    subclasses to define a `backend` member with the backend module, and a
-    `suffix` attribute indicating the method flavour to obtain.
-    '''
-
-    def __getattr__(self, name):
-        return getattr(self.backend, name + self.method_suffix)
-
-
-class IJsonTestsBase:
-    '''
-    Base class with common tests for all iteration methods.
-    Subclasses implement `all()` and `first()` to collect events coming from
-    a particuliar method.
-    '''
-
-
-class FileBasedTests:
-    pass
-
-def generate_backend_specific_tests(module, classname_prefix, method_suffix,
-                                    *bases, **kwargs):
-    for backend in ijson.ALL_BACKENDS:
-        try:
-            classname = 'Test%s%s' % (
-                ''.join(p.capitalize() for p in backend.split('_')),
-                classname_prefix
-            )
-
-            _bases = bases + (BackendSpecificTestCase,)
-            _members = {
-                'backend': ijson.get_backend(backend),
-                'method_suffix': method_suffix,
-            }
-            members = kwargs.get('members', lambda _: {})
-            _members.update(members(backend))
-            module[classname] = type(classname, _bases, _members)
-        except ImportError:
-            pass
-
-
-def generate_test_cases(module, classname, method_suffix, *bases):
-        _bases = bases + (IJsonTestsBase,)
-        members = lambda name: {
-            'get_all': lambda self, *args, **kwargs: module['get_all'](*args, **kwargs),
-        }
-        return generate_backend_specific_tests(module, classname, method_suffix,
-                                               members=members, *_bases)
