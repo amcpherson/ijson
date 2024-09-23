@@ -47,9 +47,9 @@ class BackendAdaptor:
         return get_all_for_name
 
 
-from .test_async import get_all as get_all_async
-from .test_async_types_coroutines import get_all as get_all_async_types_coroutines
-from .test_coroutines import get_all as get_all_coro
+from .support.async_ import get_all as get_all_async
+from .support.async_types_coroutines import get_all as get_all_async_types_coroutines
+from .support.coroutines import get_all as get_all_coro
 from .support.generators import get_all as get_all_gen
 
 _pull_backend_adaptors = [

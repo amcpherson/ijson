@@ -44,12 +44,12 @@ class TestMainEntryPoints:
         assert expected_results == results
 
     def _assert_async_file(self, expected_results, routine, *args, **kwargs):
-        from .test_async import get_all
+        from .support.async_ import get_all
         results = get_all(routine, JSON, *args, **kwargs)
         expected_results == results
 
     def _assert_async_types_coroutine(self, expected_results, routine, *args, **kwargs):
-        from .test_async_types_coroutines import get_all
+        from .support.async_types_coroutines import get_all
         results = get_all(routine, JSON, *args, **kwargs)
         assert expected_results == results
 

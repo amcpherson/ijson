@@ -1,7 +1,7 @@
 import asyncio
 import io
 
-from ._test_async_common import _get_all
+from ._async_common import _get_all
 
 
 class AsyncReader:

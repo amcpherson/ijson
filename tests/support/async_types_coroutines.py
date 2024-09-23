@@ -1,7 +1,7 @@
 import io
 import types
 
-from ._test_async_common import _get_all
+from ._async_common import _get_all
 
 class AsyncReaderTypesCoroutine:
     def __init__(self, data):
