@@ -27,10 +27,10 @@ static int kvitemsgen_init(KVItemsGen *self, PyObject *args, PyObject *kwargs)
 		{&BasicParseBasecoro_Type, NULL, kwargs},
 		{NULL}
 	};
-	M1_M1(reading_generator_init(&self->reading_gen, reading_args, coro_pipeline));
+	int res = reading_generator_init(&self->reading_gen, reading_args, coro_pipeline);
 	Py_DECREF(kvitems_args);
 	Py_DECREF(reading_args);
-	return 0;
+	return res;
 }
 
 static void kvitemsgen_dealloc(KVItemsGen *self)
