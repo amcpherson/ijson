@@ -1,4 +1,5 @@
 import enum
+import pathlib
 
 import ijson
 
@@ -96,3 +97,20 @@ def pytest_generate_tests(metafunc):
 
     if names:
         metafunc.parametrize(names, values, ids=ids)
+
+def pytest_addoption(parser):
+    group = parser.getgroup("Memory leak tests")
+    group.addoption("--memleaks", action="store_true", help="include memory leak tests")
+    group.addoption("--memleaks-only", action="store_true", help="run ONLY memory leak tests")
+
+def pytest_collection_modifyitems(config, items):
+    if config.option.memleaks_only:
+        skip_mark = pytest.mark.skip(reason="running only memleak tests")
+        for item in items:
+            if pathlib.Path(item.fspath).name != "test_memleaks.py":
+                item.add_marker(skip_mark)
+    elif not config.option.memleaks:
+        skip_mark = pytest.mark.skip(reason="run with --memleaks or --memleaks-only option")
+        for item in items:
+            if pathlib.Path(item.fspath).name == "test_memleaks.py":
+                item.add_marker(skip_mark)
