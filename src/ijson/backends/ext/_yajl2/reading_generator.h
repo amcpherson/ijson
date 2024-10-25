@@ -26,7 +26,6 @@ typedef struct _reading_generator {
     PyObject *buffer;
     PyObject *events;
     Py_ssize_t pos;
-    int finished;
 } reading_generator_t;
 
 /**

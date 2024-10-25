@@ -39,7 +39,6 @@ int reading_generator_init(reading_generator_t *self, PyObject *args, pipeline_n
 
 	M1_N(self->events = PyList_New(0));
 	self->pos = 0;
-	self->finished = 0;
 
 	M1_N(self->coro = chain(self->events, coro_pipeline));
 	assert(("reading_generator works only with basic_parse_basecoro",
