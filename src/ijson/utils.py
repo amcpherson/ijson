@@ -53,10 +53,12 @@ def coros2gen(source, *coro_pipeline):
         for value in source:
             try:
                 f.send(value)
-            except StopIteration:
+            except Exception as ex:
                 for event in events:
                     yield event
-                return
+                if isinstance(ex, StopIteration):
+                    return
+                raise
             for event in events:
                 yield event
             del events[:]

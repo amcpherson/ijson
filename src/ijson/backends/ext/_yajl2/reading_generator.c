@@ -48,6 +48,13 @@ int reading_generator_init(reading_generator_t *self, PyObject *args, pipeline_n
 
 void reading_generator_dealloc(reading_generator_t *self)
 {
+#if PY_VERSION_HEX >= 0x030C0000
+	Py_XDECREF(self->exc);
+#else
+	Py_XDECREF(self->exc.type);
+	Py_XDECREF(self->exc.value);
+	Py_XDECREF(self->exc.traceback);
+#endif
 	Py_XDECREF(self->read_func);
 	Py_XDECREF(self->events);
 	Py_XDECREF(self->buffer);
@@ -55,12 +62,45 @@ void reading_generator_dealloc(reading_generator_t *self)
 	Py_XDECREF(self->coro);
 }
 
+static void reading_generator_catch_exception(reading_generator_t *self)
+{
+#if PY_VERSION_HEX >= 0x030C0000
+	self->exc = PyErr_GetRaisedException();
+#else
+	PyErr_Fetch(&self->exc.type, &self->exc.value, &self->exc.traceback);
+#endif
+}
+
+static int reading_generator_exception_caught(reading_generator_t *self)
+{
+#if PY_VERSION_HEX >= 0x030C0000
+	return self->exc != NULL;
+#else
+	return self->exc.type != NULL;
+#endif
+}
+
+static void reading_generator_set_exception(reading_generator_t *self)
+{
+#if PY_VERSION_HEX >= 0x030C0000
+	assert(self->exc);
+	PyErr_SetRaisedException(self->exc);
+	self->exc = NULL;
+#else
+	assert(self->exc.type);
+	PyErr_Restore(self->exc.type, self->exc.value, self->exc.traceback);
+	self->exc.type = NULL;
+	self->exc.value = NULL;
+	self->exc.traceback = NULL;
+#endif
+}
+
 PyObject *reading_generator_next(reading_generator_t *self)
 {
 	PyObject *events = self->events;
 	Py_ssize_t nevents = PyList_Size(events);
 	BasicParseBasecoro *basic_parse_basecoro = (BasicParseBasecoro *)self->coro;
-	while (nevents == 0) {
+	while (nevents == 0 && !reading_generator_exception_caught(self)) {
 
 		/* Read data and pass it down to the co-routine */
 		Py_buffer view;
@@ -74,7 +114,9 @@ PyObject *reading_generator_next(reading_generator_t *self)
 			PyObject *send_res = ijson_yajl_parse(basic_parse_basecoro, view.buf, view.len);
 			Py_DECREF(pbuffer);
 			PyBuffer_Release(&view);
-			N_N(send_res);
+			if (!send_res) {
+				reading_generator_catch_exception(self);
+			}
 		}
 		else {
 			// read_func is "readinto"
@@ -86,7 +128,9 @@ PyObject *reading_generator_next(reading_generator_t *self)
 			N_M1(PyObject_GetBuffer(self->buffer, &view, PyBUF_SIMPLE));
 			PyObject *send_res = ijson_yajl_parse(basic_parse_basecoro, view.buf, length);
 			PyBuffer_Release(&view);
-			N_N(send_res);
+			if (!send_res) {
+				reading_generator_catch_exception(self);
+			}
 		}
 		nevents = PyList_Size(events);
 
@@ -106,6 +150,11 @@ PyObject *reading_generator_next(reading_generator_t *self)
 			N_M1(PySequence_DelSlice(events, 0, nevents));
 		}
 		return val;
+	}
+
+	if (reading_generator_exception_caught(self)) {
+		reading_generator_set_exception(self);
+		return NULL;
 	}
 
 	// no events, let's end the show

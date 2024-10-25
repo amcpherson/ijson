@@ -25,6 +25,15 @@ typedef struct _reading_generator {
     PyObject *buf_size;
     PyObject *buffer;
     PyObject *events;
+#if PY_VERSION_HEX >= 0x030C0000
+    PyObject *exc;
+#else
+    struct _exc {
+        PyObject *type;
+        PyObject *value;
+        PyObject *traceback;
+   } exc;
+#endif
     Py_ssize_t pos;
 } reading_generator_t;
 
