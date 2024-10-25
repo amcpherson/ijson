@@ -35,6 +35,14 @@ def test_lazy(backend):
     basic_parse = backend.basic_parse_gen(io.BytesIO(INVALID_JSONS[0]))
     assert basic_parse is not None
 
+def test_extra_content_still_generates_results(backend):
+    """Extra content raises an error, but still generates all events"""
+    with pytest.raises(common.JSONError):
+        events = []
+        for event in backend.basic_parse(JSON + b"#"):
+            events.append(event)
+    assert events == JSON_EVENTS
+
 def test_boundary_lexeme(backend):
     buf_size = JSON.index(b'false') + 1
     events = list(backend.basic_parse(JSON, buf_size=buf_size))
