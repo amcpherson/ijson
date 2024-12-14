@@ -33,7 +33,7 @@ jobs:
 
           combinations = (
               ("ubuntu-latest", "ARCHS_LINUX"),
-              ("macos-12", "ARCHS_MACOS"),
+              ("macos-14", "ARCHS_MACOS"),
               ("windows-2019", "ARCHS_WINDOWS"),
           )
           build_type = os.getenv("BUILD_TYPE")
