@@ -22,6 +22,8 @@
   This allows C backend tests to actually run on cibuildwheel.
 * Fixed several potential stability issues in C backend
   around correct error handling.
+* Pointing to our own fork of yajl (for when we build it ourselves)
+  that contains fixes for all known CVEs (#126).
 * Fixed potential issue with `yajl` and `yajl2` backends
   where crashes could occur at interpreter shutdown.
 * Removed tox.

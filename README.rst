@@ -642,6 +642,9 @@ Python parser in ijson is relatively simple thanks to `Douglas Crockford
 The `YAJL <https://lloyd.github.io/yajl>`__ library by `Lloyd Hilaiel
 <http://lloyd.io/>`_ is the most popular and efficient way to parse JSON in an
 iterative fashion.
+When building the library ourselves,
+we use `our own fork <https://github.com/rtobar/yajl>`__
+that contains fixes for all known CVEs.
 
 Ijson was inspired by `yajl-py <http://pykler.github.com/yajl-py/>`_ wrapper by
 `Hatem Nassrat <http://www.nassrat.ca/>`_. Though ijson borrows almost nothing
