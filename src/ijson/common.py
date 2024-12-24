@@ -386,7 +386,7 @@ def _make_parse(backend):
             )
         elif is_iterable(source):
             return utils.coros2gen(source,
-                (parse_basecoro, (), {})
+                (backend['parse_basecoro'], (), {})
             )
         raise ValueError("Unknown source type: %r" % type(source))
     return parse
