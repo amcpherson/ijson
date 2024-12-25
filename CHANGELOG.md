@@ -25,6 +25,7 @@
   around correct error handling.
 * Pointing to our own fork of yajl (for when we build it ourselves)
   that contains fixes for all known CVEs (#126).
+* Removed leftover compatibility bits in the C backend.
 * Fixed potential issue with `yajl` and `yajl2` backends
   where crashes could occur at interpreter shutdown.
 * Removed tox.

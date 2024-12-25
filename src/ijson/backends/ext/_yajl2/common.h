@@ -14,8 +14,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#define STRING_FROM_UTF8(val, len) PyUnicode_FromStringAndSize((const char *)val, len)
-
 /*
  * Error-handling macros to help reducing clutter in the code.
  * N: NULL, M1: -1, Z: zero, NZ: not-zero, LZ: less-than-zero

@@ -24,7 +24,7 @@ static int parse_basecoro_init(ParseBasecoro *self, PyObject *args, PyObject *kw
 	M1_N(self->module_state = get_state_from_imported_module());
 
 	PyObject *empty;
-	M1_N(empty = STRING_FROM_UTF8("", 0));
+	M1_N(empty = PyUnicode_FromString(""));
 	int res = PyList_Append(self->path, empty);
 	Py_DECREF(empty);
 	M1_M1(res);

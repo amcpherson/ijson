@@ -122,11 +122,11 @@ static int _yajl2_mod_exec(PyObject *m)
 
 	yajl2_state *state;
 	M1_N(state = get_state(m));
-	state->dot = STRING_FROM_UTF8(".", 1);
-	state->item = STRING_FROM_UTF8("item", 4);
-	state->dotitem = STRING_FROM_UTF8(".item", 5);
+	state->dot = PyUnicode_FromString(".");
+	state->item = PyUnicode_FromString("item");
+	state->dotitem = PyUnicode_FromString(".item");
 
-#define INIT_ENAME(x) state->enames.x##_ename = STRING_FROM_UTF8(#x, strlen(#x))
+#define INIT_ENAME(x) state->enames.x##_ename = PyUnicode_FromString(#x)
 	INIT_ENAME(null);
 	INIT_ENAME(boolean);
 	INIT_ENAME(integer);

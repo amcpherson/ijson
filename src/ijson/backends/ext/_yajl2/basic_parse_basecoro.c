@@ -100,7 +100,7 @@ static int number(void * ctx, const char *numberVal, size_t numberLen) {
 
 static int string_cb(void * ctx, const unsigned char *stringVal, size_t stringLen) {
 	PyObject *val;
-	Z_N(val = PyUnicode_FromStringAndSize((char *)stringVal, stringLen))
+	Z_N(val = PyUnicode_FromStringAndSize((const char *)stringVal, stringLen))
 	return add_event_and_value(ctx, get_enames(ctx).string_ename, val);
 }
 
@@ -111,7 +111,7 @@ static int start_map(void *ctx) {
 
 static int map_key(void *ctx, const unsigned char *key, size_t stringLen) {
 	PyObject *val;
-	Z_N(val = STRING_FROM_UTF8(key, stringLen))
+	Z_N(val = PyUnicode_FromStringAndSize((const char *)key, stringLen))
 	return add_event_and_value(ctx, get_enames(ctx).map_key_ename, val);
 }
 
