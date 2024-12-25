@@ -32,6 +32,7 @@ static PyMethodDef yajl2_methods[] = {
 };
 
 static int _yajl2_mod_exec(PyObject *m);
+static void _yajl2_mod_free(void *m);
 
 static PyModuleDef_Slot yajl2_slots[] = {
 	{Py_mod_exec, _yajl2_mod_exec},
@@ -97,6 +98,7 @@ static struct PyModuleDef moduledef = {
 	.m_size = sizeof(yajl2_state),
 	.m_methods = yajl2_methods,
 	.m_slots = yajl2_slots,
+	.m_free = _yajl2_mod_free,
 };
 
 static yajl2_state *get_state(PyObject *module)
@@ -174,16 +176,46 @@ static int _yajl2_mod_exec(PyObject *m)
 
 	// Import globally-used names
 	PyObject *ijson_common = PyImport_ImportModule("ijson.common");
-	PyObject *decimal_module = PyImport_ImportModule("decimal");
 	M1_N(ijson_common);
-	M1_N(decimal_module);
-
 	state->JSONError = PyObject_GetAttrString(ijson_common, "JSONError");
 	state->IncompleteJSONError = PyObject_GetAttrString(ijson_common, "IncompleteJSONError");
-	state->Decimal = PyObject_GetAttrString(decimal_module, "Decimal");
+	Py_DECREF(ijson_common);
 	M1_N(state->JSONError);
 	M1_N(state->IncompleteJSONError);
+
+	PyObject *decimal_module = PyImport_ImportModule("decimal");
+	M1_N(decimal_module);
+	state->Decimal = PyObject_GetAttrString(decimal_module, "Decimal");
+	Py_DECREF(decimal_module);
 	M1_N(state->Decimal);
 
 	return 0;
+}
+
+void _yajl2_mod_free(void *self)
+{
+	yajl2_state *state = PyModule_GetState((PyObject *)self);
+	if (!state) {
+		// module could have been initialised but not executed.
+		// We saw this in 3.8 when importing with importlib.module_from_spec
+		// and *not* executing the resulting module with spec.loader.exec_module.
+		return;
+	}
+	Py_XDECREF(state->Decimal);
+	Py_XDECREF(state->IncompleteJSONError);
+	Py_XDECREF(state->JSONError);
+	Py_XDECREF(state->dotitem);
+	Py_XDECREF(state->item);
+	Py_XDECREF(state->dot);
+	Py_XDECREF(state->enames.end_array_ename);
+	Py_XDECREF(state->enames.start_array_ename);
+	Py_XDECREF(state->enames.end_map_ename);
+	Py_XDECREF(state->enames.map_key_ename);
+	Py_XDECREF(state->enames.start_map_ename);
+	Py_XDECREF(state->enames.string_ename);
+	Py_XDECREF(state->enames.number_ename);
+	Py_XDECREF(state->enames.double_ename);
+	Py_XDECREF(state->enames.integer_ename);
+	Py_XDECREF(state->enames.boolean_ename);
+	Py_XDECREF(state->enames.null_ename);
 }
