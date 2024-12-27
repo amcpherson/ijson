@@ -39,17 +39,10 @@ static void parse_basecoro_dealloc(ParseBasecoro *self)
 	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-#define CONCAT(tgt, first, second) \
-	do { \
-		tgt = PyUnicode_Concat(first, second); \
-		Py_DECREF(first); \
-		N_N(tgt); \
-	} while(0);
-
 PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *value)
 {
 	ParseBasecoro *gen = (ParseBasecoro *)self;
-	Py_ssize_t npaths = PyList_Size(gen->path);
+	Py_ssize_t npaths = PyList_GET_SIZE(gen->path);
 	enames_t enames = gen->module_state->enames;
 	PyObject *dot = gen->module_state->dot;
 	PyObject *dotitem = gen->module_state->dotitem;
@@ -61,48 +54,45 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 		// pop
 		N_M1(PyList_SetSlice(gen->path, npaths - 1, npaths, NULL));
 		npaths--;
-		prefix = PySequence_GetItem(gen->path, npaths - 1);
+		prefix = PyList_GET_ITEM(gen->path, npaths - 1);
 	}
 	else if (event == enames.map_key_ename) {
 
 		// last_path = path_stack[-2]
 		// to_append = '.' + value if len(path_stack) > 1 else value
 		// new_path = path_stack[-2] + to_append
-		PyObject *last_path;
-		N_N(last_path = PySequence_GetItem(gen->path, npaths - 2));
+		PyObject *last_path = PyList_GET_ITEM(gen->path, npaths - 2);
+		PyObject *last_path_dot = NULL;
 		if (npaths > 2) {
-			PyObject *last_path_dot;
-			CONCAT(last_path_dot, last_path, dot);
+			last_path_dot = PyUnicode_Concat(last_path, dot);
+			N_N(last_path_dot);
 			last_path = last_path_dot;
 		}
-		PyObject *new_path;
-		CONCAT(new_path, last_path, value);
+		PyObject *new_path = PyUnicode_Concat(last_path, value);
+		N_N(new_path);
+		Py_XDECREF(last_path_dot);
 		PyList_SetItem(gen->path, npaths - 1, new_path);
 
-		prefix = PySequence_GetItem(gen->path, npaths - 2);
+		prefix = PyList_GET_ITEM(gen->path, npaths - 2);
 	}
 	else {
-		prefix = PySequence_GetItem(gen->path, npaths - 1);
+		prefix = PyList_GET_ITEM(gen->path, npaths - 1);
 	}
-	N_N(prefix);
 
 	// If entering a map/array, append name to path
 	if (event == enames.start_array_ename) {
 
 		// to_append = '.item' if path_stack[-1] else 'item'
 		// path_stack.append(path_stack[-1] + to_append)
-		PyObject *last_path;
-		N_N(last_path = PySequence_GetItem(gen->path, npaths - 1));
-
+		PyObject *last_path = PyList_GET_ITEM(gen->path, npaths - 1);
 		if (PyUnicode_GET_LENGTH(last_path) > 0) {
-			PyObject *new_path;
-			CONCAT(new_path, last_path, dotitem);
+			PyObject *new_path = PyUnicode_Concat(last_path, dotitem);
+			N_N(new_path);
 			N_M1(PyList_Append(gen->path, new_path));
 			Py_DECREF(new_path);
 		}
 		else {
 			N_M1(PyList_Append(gen->path, item));
-			Py_DECREF(last_path);
 		}
 	}
 	else if (event == enames.start_map_ename) {
@@ -121,7 +111,6 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 		CORO_SEND(gen->target_send, res);
 		Py_DECREF(res);
 	}
-	Py_DECREF(prefix);
 	Py_RETURN_NONE;
 }
 

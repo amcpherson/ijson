@@ -112,7 +112,7 @@ int builder_reset(builder_t *builder)
 	Py_CLEAR(builder->value);
 	Py_CLEAR(builder->key);
 
-	Py_ssize_t nvals = PyList_Size(builder->value_stack);
+	Py_ssize_t nvals = PyList_GET_SIZE(builder->value_stack);
 	M1_M1(PyList_SetSlice(builder->value_stack, 0, nvals, NULL));
 
 	return 0;
@@ -121,14 +121,13 @@ int builder_reset(builder_t *builder)
 static inline
 int _builder_add(builder_t *builder, PyObject *value)
 {
-	Py_ssize_t nvals = PyList_Size(builder->value_stack);
+	Py_ssize_t nvals = PyList_GET_SIZE(builder->value_stack);
 	if (nvals == 0) {
 		Py_INCREF(value);
 		builder->value = value;
 	}
 	else {
-		PyObject *last;
-		M1_N(last = PyList_GetItem(builder->value_stack, nvals-1));
+		PyObject *last = PyList_GET_ITEM(builder->value_stack, nvals - 1);
 		assert(("stack element not list or dict-like",
 		        PyList_Check(last) || PyMapping_Check(last)));
 		if (PyList_Check(last)) {
@@ -182,7 +181,7 @@ int builder_event(builder_t *builder, enames_t enames, PyObject *ename, PyObject
 	}
 	else if (ename == enames.end_array_ename || ename == enames.end_map_ename) {
 		// pop
-		Py_ssize_t nvals = PyList_Size(builder->value_stack);
+		Py_ssize_t nvals = PyList_GET_SIZE(builder->value_stack);
 		M1_M1(PyList_SetSlice(builder->value_stack, nvals-1, nvals, NULL));
 	}
 	else {

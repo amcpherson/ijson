@@ -21,6 +21,7 @@
 * Restructured source code so all code lives under `src/`,
   and the `ijson.backends._yajl2` extension under `src/ijson/backends/ext/_yajl2`.
   This allows C backend tests to actually run on cibuildwheel.
+* Improved performance of `parse` routine in C backend by ~4%.
 * Fixed several potential stability issues in C backend
   around correct error handling.
 * Pointing to our own fork of yajl (for when we build it ourselves)
