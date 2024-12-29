@@ -35,9 +35,6 @@ setupArgs = dict(
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -50,6 +47,7 @@ setupArgs = dict(
     ],
     packages = find_packages(where="src"),
     package_dir={"": "src"},
+    python_requires=">=3.8",
 )
 
 # Check if the yajl library + headers are present

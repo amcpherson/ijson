@@ -6,6 +6,7 @@
   and per-module state for our C extension,
   allowing us to support sub-interpreters with per-interpreter GIL.
 * Advertise support for free-threading python mode.
+* Removed support for Python < 3.8.
 * Enhanced generators so they yield all possible results to users
   before errors are raised (#123).
 * Added `ijson.ALL_BACKENDS` constant
