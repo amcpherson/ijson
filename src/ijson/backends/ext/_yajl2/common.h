@@ -54,4 +54,7 @@ PyObject* ijson_return_self(PyObject *self);
 /* Common function used by empty methods in coroutines/generators */
 PyObject* ijson_return_none(PyObject *self);
 
+/* Unpacks an iterable into multiple values, returns 0 on success, -1 on error */
+int ijson_unpack(PyObject *o, Py_ssize_t expected, ...);
+
 #endif /* COMMON_H */

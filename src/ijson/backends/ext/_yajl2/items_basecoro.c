@@ -76,10 +76,17 @@ PyObject* items_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *eve
 
 static PyObject* items_basecoro_send(PyObject *self, PyObject *tuple)
 {
-	PyObject *path  = PyTuple_GetItem(tuple, 0);
-	PyObject *event = PyTuple_GetItem(tuple, 1);
-	PyObject *value = PyTuple_GetItem(tuple, 2);
-	return items_basecoro_send_impl(self, path, event, value);
+	PyObject *path = NULL;
+	PyObject *event = NULL;
+	PyObject *value = NULL;
+	PyObject *result = NULL;
+	if(!ijson_unpack(tuple, 3, &path, &event, &value)) {
+		result = items_basecoro_send_impl(self, path, event, value);
+	}
+	Py_XDECREF(value);
+	Py_XDECREF(event);
+	Py_XDECREF(path);
+	return result;
 }
 
 static PyMethodDef items_basecoro_methods[] = {

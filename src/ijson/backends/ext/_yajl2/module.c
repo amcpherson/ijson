@@ -8,6 +8,7 @@
  * Copyright by UWA (in the framework of the ICRAR)
  */
 #include <assert.h>
+#include <stdarg.h>
 
 #include "common.h"
 #include "async_reading_generator.h"
@@ -52,6 +53,38 @@ PyObject* ijson_return_self(PyObject *self)
 PyObject* ijson_return_none(PyObject *self)
 {
 	Py_RETURN_NONE;
+}
+
+int ijson_unpack(PyObject *o, Py_ssize_t expected, ...)
+{
+	va_list args;
+	va_start(args, expected);
+	PyObject *iter = PyObject_GetIter(o);
+	if (!iter) {
+		PyErr_Format(PyExc_TypeError, "cannot unpack non-iterable %s object", Py_TYPE(o)->tp_name);
+		return -1;
+	}
+	Py_ssize_t count = 0;
+	for (PyObject *o; (o = PyIter_Next(iter)); count++) {
+		if (count >= expected) {
+			continue;
+		}
+		PyObject **target = va_arg(args, PyObject **);
+		*target = o;
+	}
+	Py_DECREF(iter);
+	if (PyErr_Occurred()) {
+		return -1;
+	}
+	if (count > expected) {
+		PyErr_Format(PyExc_ValueError, "too many values to unpack (excepted %d, got %zd)", expected, count);
+		return -1;
+	}
+	else if (count < expected) {
+		PyErr_Format(PyExc_ValueError, "not enough values to unpack (excepted %d, got %zd)", expected, count);
+		return -1;
+	}
+	return 0;
 }
 
 /* Module initialization */

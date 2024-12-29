@@ -43,3 +43,18 @@ def test_kvitems_array(adaptor):
 ])
 def test_kvitems_empty_member(adaptor, test_case):
     assert test_case.kvitems == adaptor.kvitems(test_case.json, test_case.prefix)
+
+
+def test_coro_needs_input_with_three_elements(backend):
+    int_element_parse_events = list(backend.parse(b'{"a": 0}'))
+    # all good
+    assert [('a', 0)] == list(backend.kvitems(int_element_parse_events, ''))
+    # one more element in event
+    with pytest.raises(ValueError, match="too many values"):
+        next(backend.kvitems((event + ('extra dummy',) for event in int_element_parse_events), ''))
+    # one less
+    with pytest.raises(ValueError, match="not enough values"):
+        next(backend.kvitems((event[:-1] for event in int_element_parse_events), ''))
+    # not an iterable
+    with pytest.raises(TypeError, match="cannot unpack"):
+        next(backend.kvitems([None], ''))

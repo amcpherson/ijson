@@ -67,3 +67,18 @@ def test_multiple_values(adaptor):
         adaptor.items(multiple_json, "", multiple_values=False)
     result = adaptor.items(multiple_json, "", multiple_values=True)
     assert [JSON_OBJECT, JSON_OBJECT, JSON_OBJECT] == result
+
+
+def test_coro_needs_input_with_three_elements(backend):
+    int_element_parse_events = list(backend.parse(b'0'))
+    # all good
+    assert [0] == list(backend.items(int_element_parse_events, ''))
+    # one more element in event
+    with pytest.raises(ValueError, match="too many values"):
+        next(backend.items((event + ('extra dummy',) for event in int_element_parse_events), ''))
+    # one less
+    with pytest.raises(ValueError, match="not enough values"):
+        next(backend.items((event[:-1] for event in int_element_parse_events), ''))
+    # not an iterable
+    with pytest.raises(TypeError, match="cannot unpack"):
+        next(backend.items([None], ''))

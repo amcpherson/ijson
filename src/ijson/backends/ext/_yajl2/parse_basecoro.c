@@ -127,9 +127,15 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 
 static PyObject* parse_basecoro_send(PyObject *self, PyObject *tuple)
 {
-	PyObject *event = PyTuple_GetItem(tuple, 0);
-	PyObject *value = PyTuple_GetItem(tuple, 1);
-	return parse_basecoro_send_impl(self, event, value);
+	PyObject *event = NULL;
+	PyObject *value = NULL;
+	PyObject *result = NULL;
+	if(!ijson_unpack(tuple, 2, &event, &value)) {
+		result = parse_basecoro_send_impl(self, event, value);
+	}
+	Py_XDECREF(value);
+	Py_XDECREF(event);
+	return result;
 }
 
 static PyMethodDef parse_basecoro_methods[] = {
