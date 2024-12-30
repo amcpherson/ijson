@@ -87,7 +87,8 @@ PyObject* kvitems_basecoro_send_impl(PyObject *self, PyObject *path, PyObject *e
 	}
 
 	if (retval) {
-		PyObject *tuple = PyTuple_Pack(2, retkey, retval);
+		PyObject *tuple;
+		N_N(tuple = PyTuple_Pack(2, retkey, retval));
 		Py_XDECREF(retkey);
 		Py_XDECREF(retval);
 		CORO_SEND(coro->target_send, tuple);

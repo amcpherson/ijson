@@ -107,7 +107,8 @@ PyObject* parse_basecoro_send_impl(PyObject *self, PyObject *event, PyObject *va
 		items_basecoro_send_impl(gen->target_send, prefix, event, value);
 	}
 	else {
-		PyObject *res = PyTuple_Pack(3, prefix, event, value);
+		PyObject *res;
+		N_N(res = PyTuple_Pack(3, prefix, event, value));
 		CORO_SEND(gen->target_send, res);
 		Py_DECREF(res);
 	}
