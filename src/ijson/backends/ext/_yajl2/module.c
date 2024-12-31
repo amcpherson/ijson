@@ -157,11 +157,11 @@ static int _yajl2_mod_exec(PyObject *m)
 
 	yajl2_state *state;
 	M1_N(state = get_state(m));
-	state->dot = PyUnicode_FromString(".");
-	state->item = PyUnicode_FromString("item");
-	state->dotitem = PyUnicode_FromString(".item");
+	M1_N(state->dot = PyUnicode_FromString("."));
+	M1_N(state->item = PyUnicode_FromString("item"));
+	M1_N(state->dotitem = PyUnicode_FromString(".item"));
 
-#define INIT_ENAME(x) state->enames.x##_ename = PyUnicode_FromString(#x)
+#define INIT_ENAME(x) M1_N(state->enames.x##_ename = PyUnicode_FromString(#x))
 	INIT_ENAME(null);
 	INIT_ENAME(boolean);
 	INIT_ENAME(integer);
