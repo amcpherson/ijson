@@ -33,4 +33,17 @@ typedef struct _event_names {
 	PyObject *end_array_ename;
 } enames_t;
 
+#define FOR_EACH_EVENT(f)                \
+   f(null_ename, "null");                \
+   f(boolean_ename, "boolean");          \
+   f(integer_ename, "integer");          \
+   f(double_ename, "double");            \
+   f(number_ename, "number");            \
+   f(string_ename, "string");            \
+   f(start_map_ename, "start_map");      \
+   f(map_key_ename, "map_key");          \
+   f(end_map_ename, "end_map");          \
+   f(start_array_ename, "start_array");  \
+   f(end_array_ename, "end_array");
+
 #endif /* EVENT_NAMES_H */

@@ -161,18 +161,9 @@ static int _yajl2_mod_exec(PyObject *m)
 	M1_N(state->item = PyUnicode_FromString("item"));
 	M1_N(state->dotitem = PyUnicode_FromString(".item"));
 
-#define INIT_ENAME(x) M1_N(state->enames.x##_ename = PyUnicode_FromString(#x))
-	INIT_ENAME(null);
-	INIT_ENAME(boolean);
-	INIT_ENAME(integer);
-	INIT_ENAME(double);
-	INIT_ENAME(number);
-	INIT_ENAME(string);
-	INIT_ENAME(start_map);
-	INIT_ENAME(map_key);
-	INIT_ENAME(end_map);
-	INIT_ENAME(start_array);
-	INIT_ENAME(end_array);
+#define INIT_ENAME(member, value) M1_N(state->enames.member = PyUnicode_FromString(value))
+	FOR_EACH_EVENT(INIT_ENAME);
+#undef INIT_ENAME
 
 	// Import globally-used names
 	PyObject *ijson_common = PyImport_ImportModule("ijson.common");
@@ -207,15 +198,7 @@ void _yajl2_mod_free(void *self)
 	Py_XDECREF(state->dotitem);
 	Py_XDECREF(state->item);
 	Py_XDECREF(state->dot);
-	Py_XDECREF(state->enames.end_array_ename);
-	Py_XDECREF(state->enames.start_array_ename);
-	Py_XDECREF(state->enames.end_map_ename);
-	Py_XDECREF(state->enames.map_key_ename);
-	Py_XDECREF(state->enames.start_map_ename);
-	Py_XDECREF(state->enames.string_ename);
-	Py_XDECREF(state->enames.number_ename);
-	Py_XDECREF(state->enames.double_ename);
-	Py_XDECREF(state->enames.integer_ename);
-	Py_XDECREF(state->enames.boolean_ename);
-	Py_XDECREF(state->enames.null_ename);
+#define DECREF(member, _value) Py_XDECREF(state->enames.member)
+	FOR_EACH_EVENT(DECREF)
+#undef DECREF
 }
