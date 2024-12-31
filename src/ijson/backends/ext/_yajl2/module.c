@@ -161,7 +161,11 @@ static int _yajl2_mod_exec(PyObject *m)
 	M1_N(state->item = PyUnicode_FromString("item"));
 	M1_N(state->dotitem = PyUnicode_FromString(".item"));
 
-#define INIT_ENAME(member, value) M1_N(state->enames.member = PyUnicode_FromString(value))
+#define INIT_ENAME(i, member, value)                                \
+  {                                                                 \
+    M1_N(state->enames.member = PyUnicode_FromString(value));       \
+    state->enames.hashes[i] = PyObject_Hash(state->enames.member);  \
+  }
 	FOR_EACH_EVENT(INIT_ENAME);
 #undef INIT_ENAME
 
@@ -198,7 +202,7 @@ void _yajl2_mod_free(void *self)
 	Py_XDECREF(state->dotitem);
 	Py_XDECREF(state->item);
 	Py_XDECREF(state->dot);
-#define DECREF(member, _value) Py_XDECREF(state->enames.member)
+#define DECREF(_i, member, _value) Py_XDECREF(state->enames.member)
 	FOR_EACH_EVENT(DECREF)
 #undef DECREF
 }
