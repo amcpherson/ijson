@@ -24,6 +24,8 @@
 * Improved performance of `parse` routine in C backend by ~4%.
 * Fixed several potential stability issues in C backend
   around correct error handling.
+* Fixed corner-case wrong behaviour of `yajl2_c` backend,
+  which didn't work correctly with user-provided event names.
 * Pointing to our own fork of yajl (for when we build it ourselves)
   that contains fixes for all known CVEs (#126).
 * Removed leftover compatibility bits in the C backend.

@@ -105,6 +105,7 @@ static PyObject* kvitems_basecoro_send(PyObject *self, PyObject *tuple)
 	PyObject *value = NULL;
 	PyObject *result = NULL;
 	if(!ijson_unpack(tuple, 3, &path, &event, &value)) {
+		event = get_builtin_ename(&((KVItemsBasecoro *)self)->module_state->enames, event);
 		result = kvitems_basecoro_send_impl(self, path, event, value);
 	}
 	Py_XDECREF(value);

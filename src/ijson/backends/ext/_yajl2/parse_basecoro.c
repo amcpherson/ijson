@@ -121,6 +121,7 @@ static PyObject* parse_basecoro_send(PyObject *self, PyObject *tuple)
 	PyObject *value = NULL;
 	PyObject *result = NULL;
 	if(!ijson_unpack(tuple, 2, &event, &value)) {
+		event = get_builtin_ename(&((ParseBasecoro *)self)->module_state->enames, event);
 		result = parse_basecoro_send_impl(self, event, value);
 	}
 	Py_XDECREF(value);

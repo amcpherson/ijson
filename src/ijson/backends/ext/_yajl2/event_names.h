@@ -50,4 +50,23 @@ typedef struct _event_names {
    f(9, start_array_ename, "start_array");  \
    f(10, end_array_ename, "end_array");
 
+/* Returns the module-internal event name unicode object for the given */
+static inline PyObject *get_builtin_ename(enames_t *enames, PyObject *event)
+{
+#define SWAP(x, y) { Py_INCREF(y); Py_DECREF(x); return y; }
+
+	/* Compare by pointer equality first, then by hash */
+#define MATCH(i, member, _value) if (enames->member == event) SWAP(event, enames->member)
+	FOR_EACH_EVENT(MATCH)
+#undef MATCH
+
+	Py_hash_t hash = PyObject_Hash(event);
+	Py_hash_t *hashes = enames->hashes;
+#define MATCH(i, member, _value) if (hashes[i] == hash) SWAP(event, enames->member)
+	FOR_EACH_EVENT(MATCH)
+#undef MATCH
+
+	return event;
+}
+
 #endif /* EVENT_NAMES_H */
