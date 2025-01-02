@@ -8,7 +8,7 @@ from ijson import common, utils
 import codecs
 
 
-LEXEME_RE = re.compile(r'[a-z0-9eE\.\+-]+|\S')
+LEXEME_RE = re.compile(r'[a-z0-9eNE\.\+-]+|\S')
 UNARY_LEXEMES = set('[]{},')
 EOF = -1, None
 
@@ -184,6 +184,9 @@ def parse_value(target, multivalue, use_float):
             elif symbol == 'false':
                 send(('boolean', False))
                 pop()
+            elif symbol == 'NaN':
+                send(('number', float('nan')))
+                pop()
             elif symbol[0] == '"':
                 send(('string', parse_string(symbol)))
                 pop()
@@ -226,7 +229,7 @@ def parse_value(target, multivalue, use_float):
                     if number == inf:
                         raise common.JSONError("float overflow: %s" % (symbol,))
                 except:
-                    if 'true'.startswith(symbol) or 'false'.startswith(symbol) or 'null'.startswith(symbol):
+                    if 'true'.startswith(symbol) or 'false'.startswith(symbol) or 'null'.startswith(symbol) or 'NaN'.startswith(symbol):
                         raise common.IncompleteJSONError('Incomplete JSON content')
                     raise UnexpectedSymbol(symbol, pos)
                 else:
